@@ -37,7 +37,7 @@ Check out the live demo of crm [here](https://growmarketing.netlify.app/).
 
 1. **Clone the Repository**: Use `git clone` to clone this repository to your local machine.
    ```bash
-   git clone https://github.com/naumanch969/crm.git
+   https://github.com/ashish-ethos/ethos_crm.git
    ```
 
 2. Install Dependencies
