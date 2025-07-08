@@ -28,9 +28,6 @@ GrowCRM is a comprehensive management system designed to streamline the processe
   - Express.js
   - MongoDB
 
-## Live Demo
-
-Check out the live demo of crm [here](https://growmarketing.netlify.app/).
 
 
 ## Installation and Setup
