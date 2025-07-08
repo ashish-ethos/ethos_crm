@@ -37,7 +37,7 @@ Check out the live demo of crm [here](https://growmarketing.netlify.app/).
 
 1. **Clone the Repository**: Use `git clone` to clone this repository to your local machine.
    ```bash
-   git clone https://github.com/naumanch969/crm.git
+   https://github.com/ashish-ethos/ethos_crm.git
    ```
 
 2. Install Dependencies
@@ -116,12 +116,7 @@ Define the necessary environment variables for both the frontend and backend. Sa
 
 ---
 
-## Contact
 
-Have questions or feedback? Feel free to reach out to me:
-
-- Email: naumanch969@gmail.com
-- LinkedIn: [My LinkedIn Profile](https://www.linkedin.com/in/naumanch)
 
 
 Feel free to explore, test, and customize GrowCRM to meet the specific needs of your real estate agency. If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request. 
