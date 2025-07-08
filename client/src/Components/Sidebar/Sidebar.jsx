@@ -26,6 +26,7 @@ import {
   PiWarehouseLight,
 } from "react-icons/pi";
 
+
 const Sidebar = ({ showSidebar, setShowSidebar }) => {
   //////////////////////////////////////// Variables ////////////////////////////////////////
   const { loggedUser } = useSelector((state) => state.user);
@@ -256,7 +257,7 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
             {!showSidebar ? (
               ""
             ) : (
-              <img className="w-[100px]" src="/images/adotmarketinglogo.png" />
+              <img className="w-[100px] p-2" src="/images/ethos_logo.png" />
             )}
           </div>
         </a>
@@ -297,6 +298,7 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
                   key={index}
                   openedMenu={openedMenu}
                   setOpenedMenu={setOpenedMenu}
+                  className="text-black transition-all duration-300 ease-in-out"
                 />
               ))}
             </div>

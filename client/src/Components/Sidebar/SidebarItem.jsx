@@ -37,9 +37,9 @@ const SidebarItem = ({ item, child, openedMenu, setOpenedMenu, setShowSidebar })
         } hover:text-[#20aee3] hover:border-l-[3px] hover:border-l-[#20aee3] pr-2 transition-all text-sm`}>
         <Link
           to={item?.link}
-          className="flex items-center justify-between cursor-pointer py-[12px]"
+          className="flex items-center justify-between cursor-pointer py-[12px] text-black font-Inter"
           onClick={handleMenuClick}>
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-2 text-black font-[Inter] font-medium">
             {item?.icon && <div>{item?.icon}</div>}
             {item?.title}
           </span>

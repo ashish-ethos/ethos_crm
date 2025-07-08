@@ -5,7 +5,7 @@ import { createLead, getLeads } from "../../redux/action/lead";
 import Topbar from "./Topbar";
 import { register } from "../../redux/action/user";
 import { CFormSelect } from "@coreui/react";
-import { pakistanCities, countries } from "../../constant";
+import { indianCities, countries } from "../../constant";
 import {
   Divider,
   Dialog,
@@ -105,7 +105,15 @@ const CreateLead = ({ setOpen, open, scroll }) => {
       description,
     } = leadData;
 
-    dispatch(createLead({ ...leadData, count: leadCountsToCreate < 1 ? 1 : leadCountsToCreate, ...followUpData }, navigate));
+    const cleanedData = {
+      ...leadData,
+      property: leadData.property === "" ? undefined : leadData.property, 
+      count: leadCountsToCreate < 1 ? 1 : leadCountsToCreate,
+      ...followUpData,
+    };
+
+    dispatch(createLead(cleanedData, navigate));
+    // dispatch(createLead({ ...leadData, count: leadCountsToCreate < 1 ? 1 : leadCountsToCreate, ...followUpData }, navigate));
 
     setLeadData(initialLeadState);
     setFollowUpData(initialFollowUpState);
@@ -193,7 +201,7 @@ const CreateLead = ({ setOpen, open, scroll }) => {
                     className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
                     <option value="">Select an Option</option>
 
-                    {pakistanCities.map((city, key) => (
+                    {indianCities.map((city, key) => (
                       <option key={key} value={city}>
                         {city}
                       </option>
@@ -338,7 +346,7 @@ const CreateLead = ({ setOpen, open, scroll }) => {
                     <option value="Call back Later">Call Back Later</option>
                     <option value="Interested">Interested</option>
                   </CFormSelect>
-                
+
                 </td>
               </tr>
               <tr>

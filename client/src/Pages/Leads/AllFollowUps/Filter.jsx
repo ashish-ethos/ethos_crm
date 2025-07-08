@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Drawer, TextField, Autocomplete, Select, MenuItem } from "@mui/material";
 import { PiFunnelLight, PiXLight } from "react-icons/pi";
-import { pakistanCities } from "../../../constant";
+import { indianCities } from "../../../constant";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -37,7 +37,7 @@ const Filter = ({ open, setOpen }) => {
             size="small"
             disablePortal
             id="combo-box-demo"
-            options={pakistanCities}
+            options={indianCities}
             onSelect={(e) => handleChange('city', e.target.value)}
             className="w-full"
             renderInput={(params) => (

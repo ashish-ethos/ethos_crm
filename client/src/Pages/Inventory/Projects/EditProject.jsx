@@ -14,7 +14,7 @@ import { deleteAllImagesReducer } from "../../../redux/reducer/upload";
 import { Loader, Upload } from "../../../utils";
 import { PiImages, PiNotepad, PiUser, PiXLight } from "react-icons/pi";
 import { Divider, Dialog, DialogContent, DialogTitle, Slide } from "@mui/material";
-import { pakistanCities } from "../../../constant";
+import { indianCities } from "../../../constant";
 import { getSocieties } from "../../../redux/action/society";
 import { CFormSelect } from "@coreui/react";
 
@@ -122,7 +122,7 @@ const EditProject = ({ open, setOpen, openEdit, setOpenEdit, scroll }) => {
                       value={projectData?.city}
                       onChange={(e) => handleInputChange("city", e.target.value)}
                       className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
-                      {pakistanCities.map((city, index) => (
+                      {indianCities.map((city, index) => (
                         <option key={index} value={city}>
                           {city}
                         </option>

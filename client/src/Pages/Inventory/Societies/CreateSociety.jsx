@@ -20,7 +20,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import { PiImages, PiNotepad, PiUser, PiXLight } from "react-icons/pi";
-import { pakistanCities } from "../../../constant";
+import { indianCities } from "../../../constant";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;

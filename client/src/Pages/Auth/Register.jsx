@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../redux/action/user";
 import validator from "email-validator";
 import { PiEyeSlashThin, PiEyeThin } from "react-icons/pi";
-import { pakistanCities } from "../../constant";
+import { indianCities } from "../../constant";
 import toast from "react-hot-toast";
 
 const Signup = () => {
@@ -187,7 +187,7 @@ const Signup = () => {
                     className="w-[20rem] h-[40px] px-[8px] border-b-[1px] p-2 border-[#c1c1c1] cursor-pointer text-black"
                   >
                     <option value={""}>City</option>
-                    {pakistanCities.map((city, key) => (
+                    {indianCities.map((city, key) => (
                       <option key={key} value={city}>
                         {city}
                       </option>

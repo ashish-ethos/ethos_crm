@@ -17,7 +17,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { PiImages, PiNotepad, PiUser, PiXLight } from "react-icons/pi";
-import { pakistanCities } from "../../../constant";
+import { indianCities } from "../../../constant";
 import { Loader } from "../../../utils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -159,7 +159,7 @@ const CreateInventory = ({ open, setOpen, scroll }) => {
                     <Autocomplete
                       size="small"
                       disablePortal={false}
-                      options={pakistanCities}
+                      options={indianCities}
                       value={inventoryData.sellerCity}
                       getOptionLabel={(top) => top}
                       onChange={(e, city) => handleChange('sellerCity', city)}

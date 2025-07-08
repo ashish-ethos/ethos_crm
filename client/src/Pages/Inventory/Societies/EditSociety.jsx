@@ -13,7 +13,7 @@ import { deleteAllImagesReducer } from "../../../redux/reducer/upload";
 import { Upload } from "../../../utils";
 import { PiImages, PiNotepad, PiUser, PiXLight } from "react-icons/pi";
 import { Divider, Dialog, DialogContent, DialogTitle, Slide } from "@mui/material";
-import { pakistanCities } from "../../../constant";
+import { indianCities } from "../../../constant";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;

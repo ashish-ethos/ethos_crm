@@ -7,7 +7,7 @@ import { deleteAllImagesReducer } from "../../../redux/reducer/upload";
 import { Loader, Upload } from "../../../utils";
 import { PiImages, PiNotepad, PiUser, PiXLight } from "react-icons/pi";
 import { Divider, Dialog, DialogContent, DialogTitle, Slide } from "@mui/material";
-import { pakistanCities } from "../../../constant";
+import { indianCities } from "../../../constant";
 import { CFormSelect } from "@coreui/react";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -130,7 +130,7 @@ const EditInventory = ({ open, setOpen, openEdit, setOpenEdit, scroll }) => {
                       value={inventoryData?.sellerCity}
                       onChange={(e) => handleInputChange("sellerCity", e.target.value)}
                       className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
-                      {pakistanCities.map((city) => (
+                      {indianCities.map((city) => (
                         <option key={city} value={city}>
                           {city}
                         </option>

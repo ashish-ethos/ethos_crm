@@ -3,7 +3,7 @@ import { Drawer, TextField, Autocomplete } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { filterProject } from "../../../redux/action/project";
 import { PiFunnelLight, PiXLight } from "react-icons/pi";
-import { pakistanCities } from "../../../constant";
+import { indianCities } from "../../../constant";
 import { DatePicker, DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";

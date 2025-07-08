@@ -15,7 +15,7 @@ import {
   PiXLight,
 } from "react-icons/pi";
 import { Divider, Dialog, DialogContent, DialogTitle, Slide, DialogActions } from "@mui/material";
-import { pakistanCities } from "../../constant";
+import { indianCities } from "../../constant";
 import { CFormSelect } from "@coreui/react";
 
 const Transition = React.forwardRef(function Transition(props, ref) {

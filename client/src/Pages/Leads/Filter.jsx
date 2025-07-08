@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { filterLead } from "../../redux/action/lead";
 import { FiFilter } from "react-icons/fi";
 import { PiFunnelLight, PiXLight } from "react-icons/pi";
-import { countries, pakistanCities } from "../../constant";
+import { countries, indianCities } from "../../constant";
 import { DatePicker, DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -91,7 +91,7 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
             size="small"
             disablePortal
             id="combo-box-demo"
-            options={pakistanCities}
+            options={indianCities}
             onSelect={(e) => handleChange('city', e.target.value)}
             className="w-full"
             renderInput={(params) => (

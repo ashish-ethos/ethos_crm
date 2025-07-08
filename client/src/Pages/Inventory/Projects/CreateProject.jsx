@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { PiImages, PiNotepad, PiUser, PiXLight } from "react-icons/pi";
 import { CFormSelect } from "@coreui/react";
-import { pakistanCities } from "../../../constant";
+import { indianCities } from "../../../constant";
 import { getSocieties } from "../../../redux/action/society";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -140,7 +140,7 @@ const CreateProject = ({ open, setOpen, scroll }) => {
                       className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black"
                     >
                       <option value={""}>None</option>
-                      {pakistanCities.map((city, key) => (
+                      {indianCities.map((city, key) => (
                         <option key={key} value={city}>{city}</option>
                       ))}
                     </CFormSelect>
