@@ -1,6 +1,6 @@
-# GrowCRM: Real Estate Agency Management System
+# EthosCRM: Real Estate Agency Management System
 
-EthosCRMis a comprehensive management system designed to streamline the processes of real estate agencies. It provides a centralized platform for managing various aspects of real estate operations, including lead management, analytics, project and inventory management, task management, notifications, role-based authentication, client and employee management, invoices and cashflow management, approvals management, and more.
+EthosCRM is a comprehensive management system designed to streamline the processes of real estate agencies. It provides a centralized platform for managing various aspects of real estate operations, including lead management, analytics, project and inventory management, task management, notifications, role-based authentication, client and employee management, invoices and cashflow management, approvals management, and more.
 
 ## Key Features
 
@@ -116,7 +116,7 @@ Define the necessary environment variables for both the frontend and backend. Sa
 
 
 
-Feel free to explore, test, and customize EthosCRMto meet the specific needs of your real estate agency. If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request. 
+Feel free to explore, test, and customize EthosCRM to meet the specific needs of your real estate agency. If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request. 
 
 Happy managing!
 
