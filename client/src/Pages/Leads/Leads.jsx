@@ -178,10 +178,10 @@ function Leads({ type, showSidebar }) {
       field: "status",
       headerName: "Status",
       headerClassName: "super-app-theme--header",
-      width: 150,
+      width: 220,
       renderCell: (params) => (
         <span
-          className={`border-[1px] px-[8px] py-[4px] rounded-full capitalize font-primary font-medium 
+          className={`border-[1px] px-[8px] py-[4px] rounded-full  capitalize font-primary font-small 
           ${params.row?.status == "closedWon" ? "border-green-500 text-green-500" : ""} 
           ${params.row?.status == "closedLost" ? "border-red-400 text-red-400" : ""} 
           ${params.row?.status == "followedUpCall" ? "border-sky-400 text-sky-400" : ""}

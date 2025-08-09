@@ -1,26 +1,18 @@
 import React from "react";
-import { Search } from "@mui/icons-material";
-import { Box, CircularProgress } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { Box, Typography } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import { useState } from "react";
 import { Loader } from "../../utils";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 
 const Table = ({ columns, rows, isFetching, error, rowsPerPage }) => {
-  //////////////////////////////////////// VARIABLES ///////////////////////////////////
-
-  //////////////////////////////////////// STATES //////////////////////////////////////
-  const [searchValue, setSearchValue] = useState("");
   const [state, setState] = React.useState({
     open: false,
     vertical: "top",
     horizontal: "center",
   });
-  const { vertical, horizontal, open } = state;
+  const { vertical, horizontal } = state;
 
-  //////////////////////////////////////// FUNCTIONS ///////////////////////////////////
   const handleClick = (newState) => () => {
     setState({ ...newState, open: true });
   };
@@ -28,6 +20,24 @@ const Table = ({ columns, rows, isFetching, error, rowsPerPage }) => {
   const handleClose = () => {
     setState({ ...state, open: false });
   };
+  // Define a separate component for the overlay
+  const NoRowsOverlay = () => {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <Typography variant="body1" sx={{ color: "#999" }}>
+          No Data Found
+        </Typography>
+      </Box>
+    );
+  };
+
 
   return (
     <div className="w-full">
@@ -40,7 +50,7 @@ const Table = ({ columns, rows, isFetching, error, rowsPerPage }) => {
         <Box sx={{ width: 500 }}>
           <Snackbar
             anchorOrigin={{ vertical, horizontal }}
-            open={error ? handleClick({ vertical: 'bottom', horizontal: 'right' }) : handleClose}
+            open={error ? handleClick({ vertical: "bottom", horizontal: "right" }) : handleClose}
             onClose={handleClose}
             message={error}
             key={vertical + horizontal}
@@ -58,7 +68,11 @@ const Table = ({ columns, rows, isFetching, error, rowsPerPage }) => {
                 color: "#20aee3",
                 fontFamily: "Montserrat, sans-serif",
               },
-            }}>
+              "& .MuiDataGrid-virtualScroller": {
+                minHeight: "100px !important", 
+              },
+            }}
+          >
             <DataGrid
               className="bg-white rounded-[6px] p-[15px]"
               rows={rows}
@@ -68,11 +82,15 @@ const Table = ({ columns, rows, isFetching, error, rowsPerPage }) => {
                   paginationModel: { pageSize: rowsPerPage },
                 },
               }}
-              getRowId={(row) => row._id}
+              getRowId={(row) => row.uid || row._id} 
               pageSizeOptions={[5, 10]}
               disableRowSelectionOnClick
               disableColumnMenu
               disableSelectionOnClick
+              slots={{
+                noRowsOverlay: NoRowsOverlay, 
+              }}
+
             />
           </Box>
         </div>

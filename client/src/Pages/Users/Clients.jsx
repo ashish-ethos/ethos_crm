@@ -88,6 +88,7 @@ const Clients = () => {
   ////////////////////////////////////// VARIABLES /////////////////////////////////////
   const dispatch = useDispatch();
   const { clients, isFetching, error, loggedUser } = useSelector((state) => state.user);
+  console.log("clients data:", clients);
   const columns = [
     {
       field: "uid",
@@ -168,6 +169,7 @@ const Clients = () => {
       dispatch(getEmployeeClients())
       :
       dispatch(getClients());
+      
   }, []);
 
   ////////////////////////////////////// FUNCTIONS //////////////////////////////////////////
