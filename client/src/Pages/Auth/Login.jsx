@@ -17,7 +17,7 @@ const Login = () => {
   const { isFetching, error } = useSelector((state) => state.user);
 
   /////////////////////////////////// STATES /////////////////////////////////////
-  const [userData, setUserData] = useState({ username: "super_admin", password: "password" });
+  const [userData, setUserData] = useState({ username: "demo_1", password: "demo@123" });
   const [inputError, setInputError] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordButton, setShowPasswordButton] = useState(PasswordButtonInitialStyle);
@@ -71,7 +71,7 @@ const Login = () => {
       </div>
       <div className="w-full h-screen ">
         <div className="flex justify-center pt-16">
-          <img className="h-12" src="/background/A-consultant-logo.png" />
+          <img className="h-12 w-auto" src="/images/EPR_logo.jpg" />
         </div>
         <div className="flex justify-center pt-6 pl-0 ml-0 rounded-lg">
           <div className="w-96 h-auto shadow-xl rounded bg-white">

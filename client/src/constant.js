@@ -1,3 +1,4 @@
+// client/src/constant.js 
 export const baseURL = "http://localhost:4000/api/v1";
 // export const baseURL = 'https://growmarketing.glitch.me/api/v1'
 export const rootURL = "http://localhost:4000";
@@ -302,4 +303,38 @@ export const countries = [
   { name: "Yemen", code: "YE" },
   { name: "Zambia", code: "ZM" },
   { name: "Zimbabwe", code: "ZW" },
+];
+
+export const allProjects = [
+  "DLF Privana North",
+  "DLF The Crest",
+  "DLF The Camellias",
+  "M3M Golf Hills",
+  "M3M Antalya Hills",
+  "M3M Altitude",
+  "Sobha City",
+  "Sobha International City",
+  "Signature Global Imperial",
+  "Signature Global City 92",
+  "Emaar Palm Hills",
+  "Emaar Digi Homes",
+  "Raheja Atharva",
+  "Raheja Vedaanta",
+  "Tata La Vida",
+  "Tata Primanti",
+  "Smart World One DXP",
+  "Smart World Orchard",
+  "BPTP Amstoria",
+  "Trump Residences Gurgaon",
+  "Godrej Meridien",
+  "Godrej Summit",
+  "Paras Quartier",
+  "Ireo Grand Arch",
+  "Ireo Skyon",
+  "Adani Samsara",
+  "ATS Tourmaline",
+  "ATS Triumph",
+  "Central Park Flower Valley",
+  "Elan The Presidential",
+  "Emaar Marbella",
 ];
