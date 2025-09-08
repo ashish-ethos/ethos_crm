@@ -338,3 +338,38 @@ export const allProjects = [
   "Elan The Presidential",
   "Emaar Marbella",
 ];
+
+// [
+//   { "city": "Gurgaon", "title": "DLF Privana North" },
+//   { "city": "Gurgaon", "title": "DLF The Crest" },
+//   { "city": "Gurgaon", "title": "DLF The Camellias" },
+//   { "city": "Gurgaon", "title": "M3M Golf Hills" },
+//   { "city": "Gurgaon", "title": "M3M Antalya Hills" },
+//   { "city": "Gurgaon", "title": "M3M Altitude" },
+//   { "city": "Gurgaon", "title": "Sobha City" },
+//   { "city": "Gurgaon", "title": "Sobha International City" },
+//   { "city": "Gurgaon", "title": "Signature Global Imperial" },
+//   { "city": "Gurgaon", "title": "Signature Global City 92" },
+//   { "city": "Gurgaon", "title": "Emaar Palm Hills" },
+//   { "city": "Gurgaon", "title": "Emaar Digi Homes" },
+//   { "city": "Gurgaon", "title": "Raheja Atharva" },
+//   { "city": "Gurgaon", "title": "Raheja Vedaanta" },
+//   { "city": "Gurgaon", "title": "Tata La Vida" },
+//   { "city": "Gurgaon", "title": "Tata Primanti" },
+//   { "city": "Gurgaon", "title": "Smart World One DXP" },
+//   { "city": "Gurgaon", "title": "Smart World Orchard" },
+//   { "city": "Gurgaon", "title": "BPTP Amstoria" },
+//   { "city": "Gurgaon", "title": "Trump Residences Gurgaon" },
+//   { "city": "Gurgaon", "title": "Godrej Meridien" },
+//   { "city": "Gurgaon", "title": "Godrej Summit" },
+//   { "city": "Gurgaon", "title": "Paras Quartier" },
+//   { "city": "Gurgaon", "title": "Ireo Grand Arch" },
+//   { "city": "Gurgaon", "title": "Ireo Skyon" },
+//   { "city": "Gurgaon", "title": "Adani Samsara" },
+//   { "city": "Gurgaon", "title": "ATS Tourmaline" },
+//   { "city": "Gurgaon", "title": "ATS Triumph" },
+//   { "city": "Gurgaon", "title": "Central Park Flower Valley" },
+//   { "city": "Gurgaon", "title": "Elan The Presidential" },
+//   { "city": "Gurgaon", "title": "Emaar Marbella" }
+// ]
+
