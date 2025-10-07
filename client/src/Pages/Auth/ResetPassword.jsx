@@ -40,7 +40,7 @@ const ResetPassword = () => {
       </div>
       <div className="w-full h-screen ">
         <div className="flex justify-center pt-16">
-          <img className="h-12" src="/background/A-consultant-logo.png" />
+          <img className="h-12" src="/background/EPR_logo.jpg" />
         </div>
         <div className="flex justify-center pt-6 pl-0 ml-0 rounded-lg">
           <div className="w-96 h-auto shadow-xl rounded bg-white">
