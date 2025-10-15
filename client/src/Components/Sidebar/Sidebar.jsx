@@ -4,7 +4,10 @@ import { useLocation } from "react-router-dom";
 import { Close } from "@mui/icons-material";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { CiEdit } from "react-icons/ci";
+import CampaignIcon from '@mui/icons-material/Campaign';
+import GoogleIcon from '@mui/icons-material/Google';
+import FacebookIcon from '@mui/icons-material/Facebook';
+
 import {
   PiBankLight,
   PiCalendarCheckLight,
@@ -163,6 +166,27 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
       link: "/voucher",
       childrens: [],
     },
+     {
+      id: 9,
+      title: "Marketing ",
+      icon: <CampaignIcon className="text-[25px] color-white" />,
+      role: ["employee", "manager", "super_admin"],
+      link:'/marketing',
+      childrens:[
+        {
+          title:"Google Campaign",
+          icon:<GoogleIcon className="text-[25px] color-white" />,
+          link:"/marketing",
+          role:["employee", "manager", "super_admin"]
+        },
+        {
+          title:"Facebook Campaign",
+          icon:<FacebookIcon className="text-[25px] color-white" />,
+          link:"/marketing",
+          role:["employee", "manager", "super_admin"]
+        }
+      ]
+    }
   ];
   const employeeLinks = [
     {
@@ -237,6 +261,7 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
       link: "/voucher",
       childrens: [],
     },
+    
   ];
   const links = loggedUser.role == "employee" ? employeeLinks : adminLinks;
 
