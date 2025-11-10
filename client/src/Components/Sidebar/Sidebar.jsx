@@ -3,8 +3,10 @@ import { Box, IconButton } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { Close } from "@mui/icons-material";
 import { useState } from "react";
+import { MdOutlineCampaign } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { CiEdit } from "react-icons/ci";
+import { FaGoogle, FaFacebookF, FaInstagram } from "react-icons/fa";
 import {
   PiBankLight,
   PiCalendarCheckLight,
@@ -163,6 +165,34 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
       link: "/voucher",
       childrens: [],
     },
+    {
+      id: 8,
+      title: "Campaign",
+      icon: <MdOutlineCampaign className="text-[25px]" />,
+      role: ["employee", "manager", "super_admin"],
+      link: "/campaign",
+      childrens: [
+        {
+          title: "Google Campaign",
+          icon: <MdOutlineCampaign className="text-[25px]" />,
+          link: "/campaign/google",
+          role: ["employee", "manager", "super_admin"],
+        },
+        {
+          title: "Facebook Campaign",
+          icon: <MdOutlineCampaign className="text-[25px]" />,
+          link: "/campaign/facebook",
+          role: ["employee", "manager", "super_admin"],
+        },
+        {
+          title: "Instagram Campaign",
+          icon: <MdOutlineCampaign className="text-[25px]" />,
+          link: "/campaign/instagram",
+          role: ["employee", "manager", "super_admin"],
+        },
+        
+      ],
+    },
   ];
   const employeeLinks = [
     {
@@ -244,14 +274,12 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
 
   return (
     <div
-      className={`${
-        pathname.includes("/client/") || pathname.includes("download") ? "hidden" : "visible"
-      }`}>
+      className={`${pathname.includes("/client/") || pathname.includes("download") ? "hidden" : "visible"
+        }`}>
       {/* desktop sidebar */}
       <Box
-        className={`w-[220px] sticky top-0 flex flex-col shadow-none h-screen ${
-          showSidebar ? "md:flex hidden" : "hidden"
-        } bg-white z-[1000] border-r-[1px] border-r-[#eeeff0] border-b-[1px] border-b-[#eeeff0]`}>
+        className={`w-[220px] sticky top-0 flex flex-col shadow-none h-screen ${showSidebar ? "md:flex hidden" : "hidden"
+          } bg-white z-[1000] border-r-[1px] border-r-[#eeeff0] border-b-[1px] border-b-[#eeeff0]`}>
         <a href="/">
           <div className="flex border-b-[1px] border-b-[#eeeff0] h-[4rem] items-center justify-center">
             {!showSidebar ? (
