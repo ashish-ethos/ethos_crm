@@ -36,6 +36,9 @@ import LeadRefunds from "./Pages/Leads/Refund/Refund";
 import VoucherPage from "./Pages/Vouchers/VoucherPage";
 import Home from "./ClientPanel/Home";
 import TranscriptPage from "./Pages/Transcript/TranscriptPage";
+import Marketing from "./Pages/Marketing/Marketing";
+import GoogleCampaign from "./Pages/Marketing/GoogleCampaign/GoogleCampaign";
+import FacebookCampaign from "./Pages/Marketing/FacebookCampaign/FacebookCampaign";
 
 const App = () => {
   ///////////////////////////////////// VARIABLES ////////////////////////////////////////
@@ -110,6 +113,12 @@ const App = () => {
                   <Route path="/sales/create" element={<CreateSale />} />
                   <Route path="/transcript" element={<Transcript />} />
                   <Route path="/voucher" element={<Vouchers showSidebar={showSidebar} />} />
+                  <Route path="/marketing" element={<Marketing />} />
+                  <Route path="/marketing/google-campaign" element={<GoogleCampaign />}>
+                    <Route path="create-campaign" element={<GoogleCampaign />} />
+                  </Route>
+
+                  <Route path="/marketing/facebook-campaign" element={<FacebookCampaign />} />
                   <Route path="/notifications" element={<Notifications />} />
                   <Route path="/client" element={<Home />} />
                 </Routes>

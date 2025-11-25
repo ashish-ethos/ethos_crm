@@ -1,11 +1,10 @@
 import React from 'react';
+import GoogleCampaign from './GoogleCampaign/GoogleCampaign';
 
 const Marketing = () => {
     return (
-        <div>
-            <h1>Marketing Page</h1>
-            <p>Welcome to the Marketing section of Ethos CRM.</p>
-            {/* Add your marketing components and content here */}
+        <div className='w-full'>
+            <GoogleCampaign/>
         </div>
     );
 };

@@ -4,17 +4,13 @@ import { useLocation } from "react-router-dom";
 import { Close } from "@mui/icons-material";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import CampaignIcon from '@mui/icons-material/Campaign';
-import GoogleIcon from '@mui/icons-material/Google';
-import FacebookIcon from '@mui/icons-material/Facebook';
+import { SlSocialGoogle, SlSocialFacebook } from "react-icons/sl";
+import { MdOutlineCampaign } from "react-icons/md";
+
 
 import {
   PiBankLight,
   PiCalendarCheckLight,
-  PiDatabaseLight,
-  PiFolderSimpleUserLight,
-  PiFoldersLight,
-  PiHardDrivesLight,
   PiHouseLight,
   PiListChecksLight,
   PiLockKeyLight,
@@ -24,9 +20,8 @@ import {
   PiShoppingCartSimpleLight,
   PiUserCircleLight,
   PiUserListLight,
-  PiUsersFourLight,
   PiUsersThreeLight,
-  PiWarehouseLight,
+
 } from "react-icons/pi";
 
 
@@ -166,24 +161,24 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
       link: "/voucher",
       childrens: [],
     },
-     {
+    {
       id: 9,
       title: "Marketing ",
-      icon: <CampaignIcon className="text-[25px] color-white" />,
+      icon: <MdOutlineCampaign className="text-[25px] color-white" />,
       role: ["employee", "manager", "super_admin"],
-      link:'/marketing',
-      childrens:[
+      link: '/marketing',
+      childrens: [
         {
-          title:"Google Campaign",
-          icon:<GoogleIcon className="text-[25px] color-white" />,
-          link:"/marketing",
-          role:["employee", "manager", "super_admin"]
+          title: "Google Campaign",
+          icon: <SlSocialGoogle className="text-[25px] color-white" />,
+          link: "/marketing/google-campaign",
+          role: ["employee", "manager", "super_admin"]
         },
         {
-          title:"Facebook Campaign",
-          icon:<FacebookIcon className="text-[25px] color-white" />,
-          link:"/marketing",
-          role:["employee", "manager", "super_admin"]
+          title: "Facebook Campaign",
+          icon: <SlSocialFacebook className="text-[25px] color-white" />,
+          link: "/marketing/facebook-campaign",
+          role: ["employee", "manager", "super_admin"]
         }
       ]
     }
@@ -261,7 +256,7 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
       link: "/voucher",
       childrens: [],
     },
-    
+
   ];
   const links = loggedUser.role == "employee" ? employeeLinks : adminLinks;
 
@@ -269,14 +264,12 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
 
   return (
     <div
-      className={`${
-        pathname.includes("/client/") || pathname.includes("download") ? "hidden" : "visible"
-      }`}>
+      className={`${pathname.includes("/client/") || pathname.includes("download") ? "hidden" : "visible"
+        }`}>
       {/* desktop sidebar */}
       <Box
-        className={`w-[220px] sticky top-0 flex flex-col shadow-none h-screen ${
-          showSidebar ? "md:flex hidden" : "hidden"
-        } bg-white z-[1000] border-r-[1px] border-r-[#eeeff0] border-b-[1px] border-b-[#eeeff0]`}>
+        className={`w-[220px] sticky top-0 flex flex-col shadow-none h-screen ${showSidebar ? "md:flex hidden" : "hidden"
+          } bg-white z-[1000] border-r-[1px] border-r-[#eeeff0] border-b-[1px] border-b-[#eeeff0]`}>
         <a href="/">
           <div className="flex border-b-[1px] border-b-[#eeeff0] h-[4rem] items-center justify-center">
             {!showSidebar ? (

@@ -82,7 +82,8 @@ const Table = ({ columns, rows, isFetching, error, rowsPerPage }) => {
                   paginationModel: { pageSize: rowsPerPage },
                 },
               }}
-              getRowId={(row) => row.uid || row._id} 
+              getRowId={(row) => row.id || row.uid || row._id || Math.random()}
+              // getRowId={(row) => row.uid || row._id} 
               pageSizeOptions={[5, 10]}
               disableRowSelectionOnClick
               disableColumnMenu
