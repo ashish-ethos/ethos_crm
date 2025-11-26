@@ -23,7 +23,7 @@ import transcriptRoutes from './routes/transcript.js';
 import projectRoutes from './routes/project.js';
 import societyRoutes from './routes/society.js';
 import inventoryRoutes from './routes/inventory.js';
-import campaignRoutes from './routes/campaignRoutes.js';   // FIXED
+import campaignRoutes from './routes/campaignRoutes.js';   
 
 dotenv.config();
 const app = express();
