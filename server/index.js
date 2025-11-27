@@ -59,7 +59,7 @@ app.use('/api/v1/deduction', deductionRoutes);
 app.use('/api/v1/trasncript', transcriptRoutes);
 
 // GOOGLE CAMPAIGN ROUTES
-app.use("/api/campaign", campaignRoutes);
+app.use("/api/v1/campaign", campaignRoutes);
 
 app.get('/', (req, res) => {
     res.send('Welcome to the server');

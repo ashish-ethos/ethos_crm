@@ -11,12 +11,10 @@ import {
 
 const router = express.Router();
 
-router.get("/stats", stats);           
+router.get("/stats", stats);
 router.post("/", createCampaign);
 router.get("/", getCampaigns);
-
 router.post("/:id/clone", cloneCampaign);
-
 router.get("/:id", getCampaignById);
 router.put("/:id", updateCampaign);
 router.delete("/:id", deleteCampaign);
