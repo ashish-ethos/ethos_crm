@@ -45,9 +45,6 @@ export default function CreateCampaign({ open, setOpen, onCreate = () => { } }) 
                 </button>
             </div>
 
-            {/* --------------------------------------------------
-          FORM START — FORMIK 
-        -------------------------------------------------- */}
             <Formik
                 initialValues={{
                     name: "",

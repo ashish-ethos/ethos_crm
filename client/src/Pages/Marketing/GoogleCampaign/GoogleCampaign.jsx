@@ -1,266 +1,278 @@
 // src/Pages/Marketing/GoogleCampaign/GoogleCampaign.jsx
-import React, { useMemo, useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useCallback, useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  getGoogleCampaigns,
+  createGoogleCampaign,
+  updateGoogleCampaign,
+  deleteGoogleCampaign,
+  cloneGoogleCampaign,
+} from "../../../redux/api";
+
+import {
+  setCampaigns,
+  addCampaign,
+  updateCampaign as updateCampaignAction,
+  deleteCampaign as deleteCampaignAction,
+} from "../../../redux/action/marketing";
+
+import Table from "../../../Components/Table/Table";
 import Topbar from "./Topbar";
-import CampaignCards from "./CampaignCards";
 import CreateCampaign from "./CreateCampaign";
 import FilterDrawer from "./FilterDrawer";
 import DeleteModal from "./DeleteModal";
-
-import { addCampaign, deleteCampaign, setCampaigns } from "../../../redux/action/marketing";
-import { Table } from "../../../Components";
-
-import { useNavigate, useLocation } from "react-router-dom"; // <-- NEW
-
-// fallback demo data (used when backend not present)
-const demoCampaigns = [
-    {
-        id: "c1",
-        name: "smart launch",
-        type: "smart",
-        status: "active",
-        dailyBudget: 1000,
-        totalBudget: 30000,
-        createdAt: new Date().toISOString(),
-        leads: 12,
-        spend: 12000,
-        monthlySpend: 12000,
-        weeklySpend: 3000,
-        dailySpend: 400,
-    },
-    {
-        id: "c2",
-        name: "gdn brand",
-        type: "display",
-        status: "paused",
-        dailyBudget: 500,
-        totalBudget: 15000,
-        createdAt: new Date(Date.now() - 86400000 * 10).toISOString(),
-        leads: 4,
-        spend: 2200,
-        monthlySpend: 2200,
-        weeklySpend: 500,
-        dailySpend: 70,
-    },
-];
-
-const uid = () => Math.random().toString(36).slice(2, 9);
+import CampaignCards from "./CampaignCards";
 
 export default function GoogleCampaign() {
-    const dispatch = useDispatch();
-    const navigate = useNavigate(); // <-- NEW
-    const location = useLocation(); // <-- NEW
+  const dispatch = useDispatch();
+  const campaigns = useSelector((state) => state.marketing.campaigns || []);
 
-    const marketing = useSelector(s => s.marketing || {}); // reducer namespace 'marketing'
-    const storeCampaigns = marketing.campaigns && marketing.campaigns.length ? marketing.campaigns : demoCampaigns;
+  const [loading, setLoading] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openFilter, setOpenFilter] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [search, setSearch] = useState("");
+  const [appliedFilters, setAppliedFilters] = useState(null);
+  const [error, setError] = useState(null);
 
-    // UI states
-    const [openCreate, setOpenCreate] = useState(false);
-    const [openFilter, setOpenFilter] = useState(false);
-    const [openDelete, setOpenDelete] = useState(false);
-    const [deleteId, setDeleteId] = useState(null);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [appliedFilters, setAppliedFilters] = useState(null);
+  // Fetch campaigns from backend
+  const fetchCampaigns = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getGoogleCampaigns(); // uses central API instance
+      // API may return { data: [...] } or { data: { data: [...] } }, handle both
+      const payload = res?.data?.data ?? res?.data ?? [];
+      dispatch(setCampaigns(payload));
+    } catch (err) {
+      console.error("Fetch campaigns error:", err);
+      setError(err?.message || "Failed to load campaigns");
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch]);
 
-    // if store empty seed demo campaigns
-    useEffect(() => {
-        if (!marketing.campaigns || marketing.campaigns.length === 0) {
-            dispatch(setCampaigns(demoCampaigns));
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  useEffect(() => {
+    fetchCampaigns();
+  }, [fetchCampaigns]);
 
-    // ----------- SYNC openCreate WITH URL -----------
-    // when URL contains '/create-campaign' we open drawer; when not, we close it.
-    useEffect(() => {
-        if (location.pathname.includes("/marketing/google-campaign/create-campaign")) {
-            setOpenCreate(true);
-        } else {
-            setOpenCreate(false);
-        }
-    }, [location.pathname]);
+  // Create campaign
+  const handleCreate = async (values) => {
+    setLoading(true);
+    try {
+      const res = await createGoogleCampaign(values);
+      const created = res?.data?.data ?? res?.data;
+      dispatch(addCampaign(created));
+      setOpenCreate(false);
+    } catch (err) {
+      console.error("Create error", err);
+      setError(err?.message || "Create failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Update campaign
+  const handleUpdate = async (id, values) => {
+    setLoading(true);
+    try {
+      const res = await updateGoogleCampaign(id, values);
+      const updated = res?.data?.data ?? res?.data;
+      // your reducer expects updateCampaign action with id+campaign — but you have action:updateCampaign
+      dispatch(updateCampaignAction(id, updated));
+    } catch (err) {
+      console.error("Update error", err);
+      setError(err?.message || "Update failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // function to open the drawer AND push the url (use this if you want to programmatically open)
-    const openCreateAndPush = () => {
-        // push the URL — Topbar already navigates directly, but if you ever call from here use this helper
-        navigate("/marketing/google-campaign/create-campaign", { replace: false });
-        setOpenCreate(true);
-    };
+  // Delete campaign
+  const handleDeleteConfirm = async () => {
+    if (!deleteId) return;
+    setLoading(true);
+    try {
+      await deleteGoogleCampaign(deleteId);
+      dispatch(deleteCampaignAction(deleteId));
+      setOpenDelete(false);
+      setDeleteId(null);
+    } catch (err) {
+      console.error("Delete err", err);
+      setError(err?.message || "Delete failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // function to close drawer AND return to listing URL
-    const closeCreateAndPop = () => {
-        // if current url is the create url, navigate back to listing
-        if (location.pathname.includes("/marketing/google-campaign/create-campaign")) {
-            navigate("/marketing/google-campaign", { replace: true });
-        }
-        setOpenCreate(false);
-    };
-    // ------------------------------------------------
+  // Clone campaign
+  const handleClone = async (id) => {
+    setLoading(true);
+    try {
+      const res = await cloneGoogleCampaign(id);
+      const cloned = res?.data?.data ?? res?.data;
+      dispatch(addCampaign(cloned));
+    } catch (err) {
+      console.error("Clone err", err);
+      setError(err?.message || "Clone failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // compute filtered rows dynamically (search + advanced filters)
-    const filteredRows = useMemo(() => {
-        let rows = (marketing.campaigns && marketing.campaigns.length) ? marketing.campaigns : storeCampaigns;
+  // Filtering and search (client-side)
+  const filteredCampaigns = useMemo(() => {
+    let list = campaigns || [];
 
-        // search
-        if (searchTerm?.trim()) {
-            const q = searchTerm.trim().toLowerCase();
-            rows = rows.filter(r =>
-                (r.name || "").toString().toLowerCase().includes(q) ||
-                (r.type || "").toString().toLowerCase().includes(q) ||
-                (r.status || "").toString().toLowerCase().includes(q)
-            );
-        }
+    if (search?.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(
+        (c) =>
+          (c.name || "").toLowerCase().includes(q) ||
+          (c.type || "").toLowerCase().includes(q) ||
+          (c.status || "").toLowerCase().includes(q)
+      );
+    }
 
-        // apply advanced filters
-        if (appliedFilters) {
-            const f = appliedFilters;
-            if (f.status && f.status !== "all") rows = rows.filter(r => r.status === f.status);
-            if (f.type && f.type !== "all") rows = rows.filter(r => r.type === f.type);
-            if (f.budgetMin) rows = rows.filter(r => (Number(r.dailyBudget) || 0) >= Number(f.budgetMin));
-            if (f.budgetMax) rows = rows.filter(r => (Number(r.dailyBudget) || 0) <= Number(f.budgetMax));
-            if (f.leadsMin) rows = rows.filter(r => (Number(r.leads) || 0) >= Number(f.leadsMin));
-            if (f.leadsMax) rows = rows.filter(r => (Number(r.leads) || 0) <= Number(f.leadsMax));
-            if (f.spendMin) rows = rows.filter(r => (Number(r.spend) || 0) >= Number(f.spendMin));
-            if (f.spendMax) rows = rows.filter(r => (Number(r.spend) || 0) <= Number(f.spendMax));
-            if (f.startDate && f.endDate) {
-                const s = new Date(f.startDate);
-                const e = new Date(f.endDate);
-                rows = rows.filter(r => {
-                    const d = new Date(r.createdAt);
-                    return d >= s && d <= e;
-                });
-            }
-            if (f.sortBy) {
-                const [field, dir] = f.sortBy.split("-");
-                rows = rows.slice().sort((a, b) => {
-                    const av = a[field] ?? 0;
-                    const bv = b[field] ?? 0;
-                    if (av === bv) return 0;
-                    return (av > bv ? 1 : -1) * (dir === "desc" ? -1 : 1);
-                });
-            }
-        }
+    if (appliedFilters) {
+      const f = appliedFilters;
+      if (f.status && f.status !== "all") list = list.filter((c) => c.status === f.status);
+      if (f.type && f.type !== "all") list = list.filter((c) => c.type === f.type);
+    }
 
-        return rows;
-    }, [marketing.campaigns, storeCampaigns, searchTerm, appliedFilters]);
+    return list;
+  }, [campaigns, search, appliedFilters]);
 
-    // Stats computed over filteredRows so UI shows filtered view stats
-    const stats = useMemo(() => {
-        const list = filteredRows;
-        return {
-            totalCampaigns: list.length,
-            totalLeads: list.reduce((s, c) => s + (c.leads || 0), 0),
-            active: list.filter(c => c.status === "active").length,
-            spend: list.reduce((s, c) => s + (Number(c.spend) || Number(c.monthlySpend) || 0), 0),
-        };
-    }, [filteredRows]);
+  // Prepare table columns
+  const columns = [
+    { field: "name", headerName: "Campaign Name", width: 220 },
+    { field: "type", headerName: "Type", width: 120 },
+    {
+      field: "status",
+      headerName: "Status",
+      width: 140,
+      renderCell: (p) => {
+        const val = p.row.status || "unknown";
+        const cls =
+          val === "active"
+            ? "bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-sm"
+            : val === "paused"
+            ? "bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-sm"
+            : val === "scheduled"
+            ? "bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-sm"
+            : "bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-sm";
+        return <div className={cls}>{val}</div>;
+      },
+    },
+    {
+      field: "dailyBudget",
+      headerName: "Daily Budget",
+      width: 140,
+      renderCell: (p) => `₹${p.row.dailyBudget ?? 0}`,
+    },
+    {
+      field: "totalBudget",
+      headerName: "Total Budget",
+      width: 140,
+      renderCell: (p) => `₹${p.row.totalBudget ?? 0}`,
+    },
+    { field: "leads", headerName: "Leads", width: 110 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 260,
+      renderCell: (params) => {
+        const row = params.row;
+        return (
+          <div className="flex gap-3">
+            <button
+              className="text-blue-600 hover:text-blue-800 transition"
+              onClick={() => setOpenCreate(true)}
+            >
+              Edit
+            </button>
 
-    // DataGrid columns (render dynamic cells using row props)
-    const columns = [
-        { field: "id", headerName: "ID", width: 90 },
-        {
-            field: "name",
-            headerName: "Campaign Name",
-            width: 220,
-            renderCell: (params) => <span className="font-primary px-3 capitalize">{params.row.name}</span>,
-        },
-        {
-            field: "createdAt",
-            headerName: "Created",
-            width: 140,
-            renderCell: (params) => <span>{new Date(params.row.createdAt).toLocaleDateString()}</span>
-        },
-        { field: "leads", headerName: "Leads", width: 100 },
-        { field: "dailyBudget", headerName: "Daily Budget", width: 140, renderCell: p => <span>₹{p.row.dailyBudget || 0}</span> },
-        {
-            field: "status",
-            headerName: "Status",
-            width: 120,
-            renderCell: (params) => (
-                <span className={`px-2 py-1 rounded text-sm ${params.row.status === "active" ? "bg-green-100 text-green-600"
-                        : params.row.status === "paused" ? "bg-yellow-100 text-yellow-600"
-                            : "bg-gray-200 text-gray-600"}`}>
-                    {params.row.status}
-                </span>
-            )
-        },
-        {
-            field: "action",
-            headerName: "Action",
-            width: 120,
-            renderCell: (params) => (
-                <div className="flex gap-2">
-                    <button className="text-red-500" onClick={() => { setDeleteId(params.row.id || params.row._id); setOpenDelete(true); }}>
-                        Delete
-                    </button>
-                </div>
-            )
-        }
-    ];
+            <button
+              className="text-green-600 hover:text-green-800 transition"
+              onClick={() => handleClone(row._id)}
+            >
+              Clone
+            </button>
 
-    // Create (front-end only) — generate ID and dispatch
-    const handleCreateCampaign = (payload) => {
-        const newCampaign = {
-            id: uid(),
-            name: payload.name || "New Campaign",
-            type: payload.type || "search",
-            status: payload.status || "active",
-            dailyBudget: Number(payload.dailyBudget) || 0,
-            totalBudget: Number(payload.totalBudget) || 0,
-            startDate: payload.startDate ? new Date(payload.startDate).toISOString() : null,
-            endDate: payload.endDate ? new Date(payload.endDate).toISOString() : null,
-            location: payload.location || "",
-            language: payload.language || "",
-            biddingStrategy: payload.biddingStrategy || "",
-            leads: Number(payload.leads) || 0,
-            spend: Number(payload.spend) || 0,
-            createdAt: new Date().toISOString(),
-            keywords: payload.keywords || "",
-        };
-        dispatch(addCampaign(newCampaign));
-        // close drawer by navigating back to listing route
-        navigate("/marketing/google-campaign", { replace: true });
-        setOpenCreate(false);
-    };
+            <button
+              className="text-red-600 hover:text-red-800 transition"
+              onClick={() => {
+                setDeleteId(row._id);
+                setOpenDelete(true);
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        );
+      },
+    },
+  ];
 
-    const handleDeleteConfirmed = () => {
-        if (deleteId) dispatch(deleteCampaign(deleteId));
-        setOpenDelete(false);
-        setDeleteId(null);
-    };
+  const rowsForTable = filteredCampaigns.map((c) => ({ id: c._id, ...c }));
 
-    const handleApplyFilters = (f) => {
-        setAppliedFilters(f);
-        setOpenFilter(false);
-    };
+  // compute derived stats used by CampaignCards
+  const stats = useMemo(() => {
+    const totalCampaigns = campaigns.length;
+    const totalLeads = campaigns.reduce((s, c) => s + (Number(c.leads) || 0), 0);
+    const active = campaigns.filter((c) => c.status === "active").length;
+    const paused = campaigns.filter((c) => c.status === "paused").length;
+    const scheduled = campaigns.filter((c) => c.status === "scheduled").length;
+    const draft = campaigns.filter((c) => c.status === "draft").length;
+    const spend = campaigns.reduce((s, c) => s + (Number(c.spend) || 0), 0);
 
-    return (
-        <div className="h-auto w-full font-primary p-6">
-            <DeleteModal open={openDelete} setOpen={setOpenDelete} onConfirm={handleDeleteConfirmed} />
+    // For simple monthly/daily breakdown we make approximations from 'spend' field.
+    // You can replace this with a proper backend endpoint that returns period spends.
+    const monthly = Math.round(spend);
+    const weekly = Math.round(spend / 4);
+    const daily = Math.round(spend / 30);
+    const yearly = Math.round(spend * 12);
 
-            <Topbar
-                title="Google Campaigns"
-                onSearch={(q) => setSearchTerm(q)}
-                // Topbar already navigates to the create-campaign URL on Add click.
-                onOpenCreate={() => openCreateAndPush()}
-                onOpenFilter={() => setOpenFilter(true)}
-            />
+    return { totalCampaigns, totalLeads, active, paused, scheduled, draft, spend, monthly, weekly, daily, yearly };
+  }, [campaigns]);
 
-            <CampaignCards stats={stats} onRangeChange={(type, s, e) => {
-                if (type === "custom" && s && e) setAppliedFilters(prev => ({ ...(prev || {}), startDate: s, endDate: e }));
-                else setAppliedFilters(prev => ({ ...(prev || {}), range: type }));
-            }} />
+  return (
+    <div className="w-full">
+      {/* topbar */}
+      <div className="bg-white rounded-xl p-4 mb-6 shadow-sm flex items-center justify-between">
+        <Topbar
+          title="Google Campaigns"
+          onSearch={(q) => setSearch(q)}
+          onOpenFilter={() => setOpenFilter(true)}
+          onOpenCreate={() => setOpenCreate(true)}
+        />
+      </div>
 
-            <div className="mt-6">
-                <div className="flex justify-center text-2xl text-gray-600 mb-6">All Google Campaigns</div>
+      {/* metrics + charts */}
+      <div className="mb-8">
+        <CampaignCards stats={stats} onRangeChange={(r, s, e) => setAppliedFilters((p) => ({ ...(p || {}), range: r, start: s, end: e }))} />
+      </div>
 
-                <Table rows={filteredRows} columns={columns} rowsPerPage={10} />
-            </div>
-
-            {/* Drawer (CreateCampaign) - open controlled by URL / openCreate */}
-            <CreateCampaign open={openCreate} setOpen={closeCreateAndPop} onCreate={handleCreateCampaign} />
-            <FilterDrawer open={openFilter} setOpen={setOpenFilter} onApply={handleApplyFilters} />
+      {/* table */}
+      <div className="bg-white rounded-xl p-6 shadow-md">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">All Campaigns</h2>
         </div>
-    );
+
+        <Table columns={columns} rows={rowsForTable} isFetching={loading} error={error} rowsPerPage={10} />
+      </div>
+
+      {/* drawers & modals */}
+      <CreateCampaign open={openCreate} setOpen={setOpenCreate} onCreate={async (values) => {
+        if (values._id) await handleUpdate(values._id, values);
+        else await handleCreate(values);
+      }} />
+
+      <FilterDrawer open={openFilter} setOpen={setOpenFilter} onApply={(f) => { setAppliedFilters(f); setOpenFilter(false); }} />
+
+      <DeleteModal open={openDelete} setOpen={setOpenDelete} onConfirm={handleDeleteConfirm} />
+    </div>
+  );
 }
