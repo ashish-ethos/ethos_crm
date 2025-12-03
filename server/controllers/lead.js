@@ -91,6 +91,7 @@ const statuses = [
     { name: "Contacted Client (Call)", value: 'contactedClientCall' },
     { name: "Contacted Client (Call Attempt)", value: 'contactedClientCallAttempt' },
     { name: "Contacted Client (Email)", value: 'contactedClientEmail' },
+    { name:"Not Interested", value: 'notInterested' }
 ];
 
 export const getLeadsStat = async (req, res, next) => {
@@ -433,5 +434,130 @@ export const deleteWholeCollection = async (req, res, next) => {
         res.status(200).json({ result, message: 'Lead collection deleted successfully', success: true });
     } catch (err) {
         next(createError(500, err.message));
+    }
+};
+
+const getRangeFromPeriod = (period, startingDate, endingDate) => {
+    const now = new Date();
+    let startDate = null;
+    let endDate = null;
+
+    if (!period || period === 'date') {
+        // treat 'date' as today
+        startDate = new Date(now);
+        startDate.setHours(0,0,0,0);
+        endDate = new Date(now);
+        endDate.setHours(23,59,59,999);
+    } else if (period === 'week') {
+        // last 7 days including today
+        endDate = new Date(now);
+        endDate.setHours(23,59,59,999);
+        startDate = new Date(now);
+        startDate.setDate(startDate.getDate() - 6); // 7 day window
+        startDate.setHours(0,0,0,0);
+    } else if (period === 'month') {
+        endDate = new Date(now);
+        endDate.setHours(23,59,59,999);
+        startDate = new Date(now);
+        startDate.setMonth(startDate.getMonth() - 1);
+        startDate.setHours(0,0,0,0);
+    } else if (period === 'range') {
+        if (startingDate && isValidDate(startingDate)) {
+            startDate = new Date(startingDate);
+            startDate.setHours(0,0,0,0);
+        }
+        if (endingDate && isValidDate(endingDate)) {
+            endDate = new Date(endingDate);
+            endDate.setHours(23,59,59,999);
+        }
+    }
+    return { startDate, endDate };
+};
+
+export const getShuffleLeads = async (req, res, next) => {
+    try {
+        // Query params
+        const { period, employee, employees, startingDate, endingDate, limit } = req.query;
+
+        // Build base filter: status is 'notInterested' (as you asked)
+        const filter = { status: 'notInterested', isArchived: { $ne: true } };
+
+        // Date range
+        const { startDate, endDate } = getRangeFromPeriod(period, startingDate, endingDate);
+        if (startDate) filter.createdAt = { ...(filter.createdAt || {}), $gte: startDate };
+        if (endDate) filter.createdAt = { ...(filter.createdAt || {}), $lte: endDate };
+
+        // Employee filter:
+        // - if `employee` provided -> filter allocatedTo contains that id
+        // - else if `employees` provided -> comma-separated ids -> match any
+        // - else default: if caller is an employee (req.user._id present) return leads for that user
+        if (employee) {
+            filter.allocatedTo = employee;
+        } else if (employees) {
+            const ids = employees.split(',').map((id) => id.trim()).filter(Boolean);
+            if (ids.length > 0) filter.allocatedTo = { $in: ids };
+        } else if (req.user && req.user._id) {
+            // default to showing only leads that are allocated to the logged-in user
+            filter.allocatedTo = req.user._id;
+        }
+
+        // Query DB
+        let query = Lead.find(filter).populate('client').populate('property').populate('allocatedTo');
+
+        // limit if provided
+        const n = Number(limit) || undefined;
+        if (n) query = query.limit(n);
+
+        const leads = await query.exec();
+
+        // shuffle results server-side (Fisher–Yates)
+        const arr = [...leads];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+
+        res.status(200).json({ result: arr, message: 'Shuffled leads fetched successfully', success: true });
+    } catch (err) {
+        next(createError(500, err.message || err));
+    }
+};
+
+export const assignShuffledLead = async (req, res, next) => {
+    try {
+        const { leadId } = req.params;
+        const { assignTo, setAsPrimary } = req.body; // assignTo: userId, setAsPrimary: boolean
+
+        if (!assignTo) return next(createError(400, 'assignTo (employee id) is required'));
+
+        // If setAsPrimary true -> replace allocatedTo with [assignTo], else push if not already present
+        let updated;
+        if (setAsPrimary) {
+            updated = await Lead.findByIdAndUpdate(
+                leadId,
+                { $set: { allocatedTo: [assignTo] } },
+                { new: true }
+            )
+            .populate('client')
+            .populate('property')
+            .populate('allocatedTo')
+            .exec();
+        } else {
+            updated = await Lead.findByIdAndUpdate(
+                leadId,
+                { $addToSet: { allocatedTo: assignTo } }, // avoids duplicates
+                { new: true }
+            )
+            .populate('client')
+            .populate('property')
+            .populate('allocatedTo')
+            .exec();
+        }
+
+        if (!updated) return next(createError(400, 'Lead not found'));
+
+        res.status(200).json({ result: updated, message: 'Lead assigned successfully', success: true });
+    } catch (err) {
+        next(createError(500, err.message || err));
     }
 };

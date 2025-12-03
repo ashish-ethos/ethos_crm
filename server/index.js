@@ -58,8 +58,9 @@ app.use('/api/v1/voucher', voucherRoutes);
 app.use('/api/v1/deduction', deductionRoutes);
 app.use('/api/v1/trasncript', transcriptRoutes);
 
-// GOOGLE CAMPAIGN ROUTES
 app.use("/api/v1/campaign", campaignRoutes);
+// app.use("/api/v1/shuffle", shuffleRoutes);
+
 
 app.get('/', (req, res) => {
     res.send('Welcome to the server');
