@@ -36,6 +36,7 @@ const UpateStatusModal = ({ open, setOpen }) => {
     { name: "Meeting (Done)", value: "meetingDone" },
     { name: "Closed (Won)", value: "closedWon" },
     { name: "Meeting (Attempt)", value: "meetingAttempt" },
+    { name:"Not Interested", value: "notInterested" }
   ];
   ////////////////////////////////////// STATES  /////////////////////////////////////
   const [status, setStatus] = useState(currentLead?.status);

@@ -7,9 +7,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getEmployeeLeads, getLeads, searchLead } from "../../redux/action/lead";
 import { PiArchive, PiChartBar, PiMagnifyingGlass, PiNote } from "react-icons/pi";
 import { FiFilter, FiList, FiUser } from "react-icons/fi";
+import { PiShuffleBold } from "react-icons/pi";
 import CreateLead from "./CreateLead";
 import EditModal from "./EditModal";
 import { searchLeadReducer } from "../../redux/reducer/lead";
+import ShuffleLead from "./ShuffleLead";
 
 const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, setOpenFilters }) => {
   ////////////////////////////////////////// VARIABLES //////////////////////////////////////
@@ -24,7 +26,38 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
   ////////////////////////////////////////// STATES //////////////////////////////////////
   const [open, setOpen] = useState(false);
   const [scroll, setScroll] = React.useState("paper");
+  const [openShuffle, setOpenShuffle] = useState(false);
+  const [shuffleType, setShuffleType] = useState("");
+  const [status, setStatus] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [employees, setEmployees] = useState([]);
+
   const descriptionElementRef = React.useRef(null);
+  const shuffleOptions = [
+    { label: "This Weeks", value: "week" },
+    { label: "This Month", value: "month" },
+    { label: "Custom Date Range", value: "custom" }
+  ];
+
+  const leadStatusOptions = [
+    "Not Interested",
+    "Not Answering",
+    "Call Not Picked",
+    "Pending",
+    "Follow Up",
+    "Invalid Number"
+  ];
+
+  const employeeList = [
+    "Rahul",
+    "Priya",
+    "Amit",
+    "Sneha",
+    "Vikas",
+    "Rohan",
+    "All Employees"
+  ];
 
   ////////////////////////////////////////// USE EFFECTS //////////////////////////////////
   useEffect(() => {
@@ -42,6 +75,10 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
     dispatch(searchLeadReducer(searchTerm));
   }
 
+  const handleOpenShuffle = () => {
+    console.log("Shuffle icon clicked");
+    setOpenShuffle(true);
+  }
 
   const handleToggleShowArchivedLeads = () => {
     setOptions((pre) => ({
@@ -136,6 +173,16 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
                 <FiList className="text-[25px] " />
               </div>
             </Tooltip>
+            <Tooltip title="Shuffle Lead" arrow placement="top">
+              <div
+                onClick={handleOpenShuffle}
+                className={` p-2 rounded-md cursor-pointer ${openShuffle
+                  ? "text-[#20aee3] bg-[#e4f1ff]"
+                  : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
+                  }`}>
+                <PiShuffleBold className="w-6 h-6 " />
+              </div>
+            </Tooltip>
             <Tooltip title="Filter" arrow placement="top">
               <div
                 onClick={handleToggleFilters}
@@ -148,7 +195,7 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
             </Tooltip>
             <Tooltip title="Call Reminders" arrow placement="top">
               <div
-                onClick={()=>navigate('/leads/call-reminders')}
+                onClick={() => navigate('/leads/call-reminders')}
                 className={` p-2 rounded-md cursor-pointer ${openFilters
                   ? "text-[#20aee3] bg-[#e4f1ff]"
                   : "bg-[#ebf2f5] hover:bg-[#dfe6e8] text-[#a6b5bd]"
@@ -168,6 +215,48 @@ const Topbar = ({ options, setOptions, isFiltered, setIsFiltered, openFilters, s
           </div>
         )}
       </div>
+
+      <ShuffleLead
+        open={openShuffle}
+        setOpen={setOpenShuffle}
+
+        shuffleOptions={shuffleOptions}
+        leadStatusOptions={leadStatusOptions}
+        employeeList={employeeList}
+
+        shuffleType={shuffleType}
+        setShuffleType={setShuffleType}
+
+        status={status}
+        setStatus={setStatus}
+
+        startDate={startDate}
+        setStartDate={setStartDate}
+
+        endDate={endDate}
+        setEndDate={setEndDate}
+
+        employees={employees}
+        setEmployees={setEmployees}
+
+        onShuffle={() => {
+          console.log("Shuffle Triggered", {
+            shuffleType,
+            status,
+            startDate,
+            endDate,
+            employees,
+          });
+        }}
+
+        onReset={() => {
+          setShuffleType("");
+          setStatus([]);
+          setStartDate(null);
+          setEndDate(null);
+          setEmployees([]);
+        }}
+      />
 
       <CreateLead scroll={scroll} open={open} setOpen={setOpen} />
     </div>

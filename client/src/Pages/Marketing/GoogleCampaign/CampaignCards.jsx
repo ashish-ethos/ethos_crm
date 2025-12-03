@@ -139,7 +139,7 @@ export default function CampaignCards({ stats = {}, onRangeChange = () => { } })
             }}
           >
             <CardContent sx={{ p: 2, position: "relative" }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1 }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", }}>
                 <p className="font-semibold" sx={{ fontSize: 15, color: "#6b7280" }}>
                   {getStatusLabel(selectedStatus)} Campaigns
                 </p>
@@ -210,12 +210,13 @@ export default function CampaignCards({ stats = {}, onRangeChange = () => { } })
             sx={{
               p: 0,
               borderRadius: 3,
+              background:"#a389fc30",
               boxShadow: "0px 3px 10px rgba(0,0,0,0.06)",
-              border: "1px solid #dbeafe",
+              border: "1px solid #f5acf97a",
             }}
           >
             <CardContent sx={{ p: 2, position: "relative" }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1 }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start",  }}>
                 <p className="font-semibold" sx={{ fontSize: 15, color: "#6b7280" }}>
                   {getPeriodLabel(selectedPeriod)} Spend
                 </p>

@@ -191,7 +191,10 @@ function Leads({ type, showSidebar }) {
           ${params.row?.status == "contactedEmail" ? "border-teal-400 text-teal-500" : ""} 
           ${params.row?.status == "meetingDone" ? "border-indigo-400 text-indigo-500" : ""}
           ${params.row?.status == "meetingAttempt" ? "border-pink-400 text-pink-500" : ""}
-          ${params.row?.status == "new" ? "border-rose-700 text-rose-700" : ""}`}>
+          ${params.row?.status == "new" ? "border-rose-700 text-rose-700" : ""}
+          ${params.row?.status == "notInterested" ? "border-red-500 text-red-800" : ""}
+          `}>
+            
           <span>
             {params.row?.status == "closedWon" ? <div>Closed Won</div> : <div></div>}
             {params.row?.status == "closedLost" ? <div>Closed Lost</div> : <div></div>}
@@ -202,6 +205,7 @@ function Leads({ type, showSidebar }) {
             {params.row?.status == "contactedEmail" ? <div>Contacted Email</div> : <div></div>}
             {params.row?.status == "meetingDone" ? <div>Meeting Done</div> : <div></div>}
             {params.row?.status == "meetingAttempt" ? <div>Meeting Attempt</div> : <div></div>}
+            {params.row?.status == "notInterested" ? <div>Not Interested</div> : <div></div>}
             {params.row?.status == "new" ? <div>New</div> : <div></div>}
           </span>
         </span>

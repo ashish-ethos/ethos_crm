@@ -5,7 +5,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { IoClose } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 
@@ -31,7 +31,7 @@ const CampaignSchema = Yup.object().shape({
 
 
 export default function CreateCampaign({ open, setOpen, onCreate = () => { } }) {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     return (
         <div
@@ -40,9 +40,10 @@ export default function CreateCampaign({ open, setOpen, onCreate = () => { } }) 
         >
             <div className="flex justify-between items-center p-4 border-b bg-[#20aee3] text-white">
                 <h3 className="text-lg">Create Campaign</h3>
-                <button onClick={() => navigate(-1)}>
-                    <IoClose size={22}/>
+                <button onClick={() => setOpen(false)}>
+                    <IoClose size={22} />
                 </button>
+
             </div>
 
             <Formik

@@ -12,7 +12,7 @@ const priorities = [
   { name: "Cold", value: 'cold' },
   { name: "Very Cold", value: 'veryCold' },
 ];
-  
+
 const sources = [
   { name: "Instagram", value: 'instagram' },
   { name: "Facebook", value: 'facebook' },
@@ -34,6 +34,7 @@ const statuses = [
   { name: "Contacted Client (Call)", value: 'contactedClientCall' },
   { name: "Contacted Client (Call Attempt)", value: 'contactedClientCallAttempt' },
   { name: "Contacted Client (Email)", value: 'contactedClientEmail' },
+  { name: "Not Interested", value: 'notInterested' }
 ];
 
 const LeadsStat = () => {
@@ -41,7 +42,7 @@ const LeadsStat = () => {
   ////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////
   const { stats, leads } = useSelector(state => state.lead)
   const dispatch = useDispatch()
- 
+
 
   ////////////////////////////////////////////// STATES //////////////////////////////////////////////////////
   const [type, setType] = useState('status')  // status, priority, property, source
