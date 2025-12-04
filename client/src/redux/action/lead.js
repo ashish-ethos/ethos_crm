@@ -175,3 +175,56 @@ export const deleteLead = (leadId) => async (dispatch) => {
         dispatch(error(err.message))
     }
 }
+
+// Shuffle Leads Actions
+export const getShuffleLeadsAction = () => async (dispatch) => {
+  try {
+    dispatch(start());
+    const { data } = await api.getShuffleLeads();
+    dispatch(getLeadsReducer(data.result)); // reuse existing reducer
+    dispatch(end());
+  } catch (err) {
+    const message = err?.response?.data?.message || err?.message || "Something went wrong";
+    toast.error(message);
+    dispatch(error(message));
+  }
+};
+
+export const assignShuffleLeadAction = (leadId, assignedTo) => async (dispatch) => {
+  try {
+    dispatch(start());
+    const { data } = await api.assignShuffledLead(leadId, assignedTo);
+    dispatch(updateLeadReducer(data.result));
+    dispatch(end());
+  } catch (err) {
+    const message = err?.response?.data?.message || err?.message || "Something went wrong";
+    toast.error(message);
+    dispatch(error(message));
+  }
+};
+
+export const bulkShuffleLeadsAction = (payload) => async (dispatch) => {
+  try {
+    dispatch(start());
+    const { data } = await api.bulkShuffleLeads(payload);
+    dispatch(getLeadsReducer(data.result));
+    dispatch(end());
+  } catch (err) {
+    const message = err?.response?.data?.message || err?.message || "Something went wrong";
+    toast.error(message);
+    dispatch(error(message));
+  }
+};
+
+export const filterShuffleLeadsAction = (filters) => async (dispatch) => {
+  try {
+    dispatch(start());
+    const { data } = await api.filterAndShuffleLeads(filters);
+    dispatch(getLeadsReducer(data.result));
+    dispatch(end());
+  } catch (err) {
+    const message = err?.response?.data?.message || err?.message || "Something went wrong";
+    toast.error(message);
+    dispatch(error(message));
+  }
+};

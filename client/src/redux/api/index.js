@@ -209,3 +209,8 @@ export const updateGoogleCampaign = (id, data) => API.put(`/campaign/${id}`, dat
 export const deleteGoogleCampaign = (id) => API.delete(`/campaign/${id}`)
 export const cloneGoogleCampaign = (id) => API.post(`/campaign/${id}/clone`)
 
+// SHUFFLE LEADS
+export const getShuffleLeads = () => API.get(`/lead/get/shuffle`);
+export const assignShuffledLead = (leadId, assignedTo) => API.put(`/lead/shuffle/assign/${leadId}`, { assignedTo });
+export const bulkShuffleLeads = (data) =>  API.post(`/lead/shuffle/bulk`, data);
+export const filterAndShuffleLeads = (filters) =>  API.post(`/lead/shuffle/filter`, filters);
