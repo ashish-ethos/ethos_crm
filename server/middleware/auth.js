@@ -3,10 +3,21 @@ import { createError } from '../utils/error.js';
 
 export const verifyToken = async (req, res, next) => {
     try {
-        const token = req.headers.authtoken;
-        if (!token) return next(createError(401, 'Token is required'))
+        let token;
 
-        const decodedData = await jwt.verify(token, process.env.JWT_SECRET);
+        // Read token from Authorization header
+        if (req.headers.authorization) {
+            token = req.headers.authorization.split(" ")[1]; // "Bearer token"
+        }
+
+        // OR read from authtoken
+        if (!token && req.headers.authtoken) {
+            token = req.headers.authtoken;
+        }
+
+        if (!token) return next(createError(401, 'Token is required'));
+
+        const decodedData = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decodedData;
 
         next();

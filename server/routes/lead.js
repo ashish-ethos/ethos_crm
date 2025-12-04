@@ -16,6 +16,8 @@ import {
   searchLead,
   getShuffleLeads,
   assignShuffledLead,
+  bulkShuffleLeads,
+  filterAndShuffleLeads,
 } from "../controllers/lead.js";
 import {
   verifyEmployee,
@@ -31,18 +33,20 @@ const router = express.Router();
 const verifyIsAllocatedTo = async (req, res, next) => {
   try {
     const { leadId } = req.params;
-    const findedLead = await Lead.findById(leadId);
-    if (!Boolean(findedLead)) return next(createError(400, "lead not exist"));
-    if (
-      findedLead.allocatedTo == req.user._id ||
-      req.user.role == ("manager" || "super_admin")
-    )
-      next();
+    const lead = await Lead.findById(leadId);
+
+    if (!lead) return next(createError(400, "Lead not exist"));
+
+    const isManager = ["manager", "super_admin"].includes(req.user.role);
+    const isAllocated = lead.allocatedTo.toString().includes(req.user._id);
+
+    if (isAllocated || isManager) next();
     else next(createError(401, "This lead is not allocated to you."));
   } catch (err) {
     next(createError(500, err.message));
   }
 };
+
 
 // GET
 router.get("/get/single/:leadId", getLead);
@@ -54,8 +58,18 @@ router.get("/get/stats", verifyToken, verifyEmployee, getLeadsStat);
 router.get("/search", verifyToken, searchLead);
 router.get("/filter", verifyToken, filterLead);
 
-router.get('/get/shuffle', getShuffleLeads);
-router.post('/shuffle/assign/:leadId', verifyToken, verifyEmployee, assignShuffledLead);
+// GET ALL LEADS
+router.get("/get/all", verifyToken, verifyManager, getLeads);
+router.get("/get/shuffle", verifyToken, verifyManager, getShuffleLeads);
+router.post("/shuffle/assign/:leadId", verifyToken, verifyManager, assignShuffledLead);
+router.post("/shuffle/bulk", verifyToken, verifyManager, bulkShuffleLeads);
+router.post("/shuffle/filter", verifyToken, verifyManager, filterAndShuffleLeads);
+
+
+router.post('/shuffle/bulk', verifyManager, bulkShuffleLeads );
+router.post('/shuffle/filter', verifyManager, filterAndShuffleLeads);
+
+
 
 // POST
 router.post("/create", verifyToken, createLead);
