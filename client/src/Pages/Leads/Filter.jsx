@@ -36,7 +36,8 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
     { name: "Contacted Client(Email)", value: "contactedClientEmail" },
     { name: "Meeting(Done)", value: "meetingDone" },
     { name: "Meeting(Attempt)", value: "meetingAttempt" },
-    { name: "Not Interested", value: "notInterested" }
+    { name: "Not Interested", value: "notInterested" },
+    { name: "Not Answering", value: "notAnswering" }
   ];
 
   const sources = [

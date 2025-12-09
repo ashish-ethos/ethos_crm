@@ -17,7 +17,7 @@ const Cards = () => {
   return (
     <div>
       <Box className="w-auto md:columns-3 font-primary">
-        
+
         <Card className="bg-white border-b-[3px] border-b-emerald-300 md:mt-0 mt-2">
           <CardContent className="flex justify-between items-center">
             <div className="float-left">
@@ -25,7 +25,7 @@ const Cards = () => {
               <p className="text-md text-slate-500 text-opacity-70">Payments - Today</p>
             </div>
             <div>
-            <CiCreditCard1 className="text-emerald-300 text-[50px]" />
+              <CiCreditCard1 className="text-emerald-300 text-[50px]" />
             </div>
           </CardContent>
         </Card>
@@ -39,7 +39,7 @@ const Cards = () => {
               </p>
             </div>
             <div>
-            <CiCreditCard1 className="text-sky-400 text-[50px]" />
+              <CiCreditCard1 className="text-sky-400 text-[50px]" />
             </div>
           </CardContent>
         </Card>
@@ -53,7 +53,7 @@ const Cards = () => {
               </p>
             </div>
             <div>
-            <CiCreditCard1 className="text-amber-400 text-[50px]" />
+              <CiCreditCard1 className="text-amber-400 text-[50px]" />
             </div>
           </CardContent>
         </Card>

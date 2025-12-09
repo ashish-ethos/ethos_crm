@@ -40,7 +40,7 @@ const periods = [
 
 const statusOptions = [
   { value: "notInterested", label: "Not Interested" },
-  { value: "notAnswered", label: "Not Answered" },
+  { value: "notAnswering", label: "Not Answering" },
 ];
 
 const MenuProps = {
@@ -162,7 +162,7 @@ const ShuffleLead = ({ open, setOpen }) => {
       <Box sx={{ width: 440, height: "100vh", display: "flex", flexDirection: "column" }}>
         {/* Header */}
         <Box className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50">
-          <Typography variant="h6" className="font-bold text-blue-700">
+          <Typography variant="h6" className="font-bold text-primary-blue">
             Distribute Leads
           </Typography>
           <IconButton onClick={() => setOpen(false)} className="hover:bg-white/50">
@@ -309,14 +309,14 @@ const ShuffleLead = ({ open, setOpen }) => {
           {/* Preview */}
           {preview && (
             <Alert severity="info" className="bg-blue-50 border-blue-200">
-              <Typography className="font-bold text-blue-900">
+              <Typography className="font-bold text-primary-blue">
                 {preview.total} leads will be distributed
               </Typography>
               <Box className="mt-2 space-y-1">
                 {Object.entries(getProjectedCount()).map(([name, count]) => (
                   <Box key={name} className="flex justify-between">
                     <span className="font-medium">{name}</span>
-                    <span className="font-bold text-blue-700">{count} leads</span>
+                    <span className="font-bold text-primary-blue">{count} leads</span>
                   </Box>
                 ))}
               </Box>
@@ -333,7 +333,7 @@ const ShuffleLead = ({ open, setOpen }) => {
             onClick={handlePreview}
             disabled={loadingPreview || isFetching || form.employees.length === 0}
             startIcon={loadingPreview ? <CircularProgress size={20} /> : null}
-            className="text-blue-700 border-blue-700 hover:bg-blue-50"
+            className="text-primary-blue border-blue-700 hover:bg-blue-50"
           >
             {loadingPreview ? "Loading Preview..." : "Preview Distribution"}
           </Button>

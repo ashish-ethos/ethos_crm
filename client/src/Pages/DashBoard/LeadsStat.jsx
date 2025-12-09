@@ -34,7 +34,8 @@ const statuses = [
   { name: "Contacted Client (Call)", value: 'contactedClientCall' },
   { name: "Contacted Client (Call Attempt)", value: 'contactedClientCallAttempt' },
   { name: "Contacted Client (Email)", value: 'contactedClientEmail' },
-  { name: "Not Interested", value: 'notInterested' }
+  { name: "Not Interested", value: 'notInterested' },
+  { name: "Not Answering", value: 'notAnswering' }
 ];
 
 const LeadsStat = () => {

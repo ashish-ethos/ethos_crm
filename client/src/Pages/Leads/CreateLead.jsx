@@ -68,7 +68,8 @@ const CreateLead = ({ setOpen, open, scroll }) => {
     { name: "Meeting (Done)", value: "meetingDone" },
     { name: "Closed (Won)", value: "closedWon" },
     { name: "Meeting (Attempt)", value: "meetingAttempt" },
-    { name: "Not Interested", value: "notInterested" }
+    { name: "Not Interested", value: "notInterested" },
+    { name: "Not Answering", value: "notAnswering" }
   ];
   const sources = [
     { name: "Instagram", value: "instagram" },
