@@ -3,9 +3,9 @@ import { Box, IconButton } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { Close } from "@mui/icons-material";
 import { useState } from "react";
+import { MdOutlineCampaign } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { SlSocialGoogle, SlSocialFacebook } from "react-icons/sl";
-import { MdOutlineCampaign } from "react-icons/md";
 
 
 import {
@@ -175,9 +175,9 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
           role: ["employee", "manager", "super_admin"]
         },
         {
-          title: "Facebook Campaign",
+          title: "Meta Campaign",
           icon: <SlSocialFacebook className="text-[25px] color-white" />,
-          link: "/marketing/facebook-campaign",
+          link: "/marketing/meta-campaign",
           role: ["employee", "manager", "super_admin"]
         }
       ]

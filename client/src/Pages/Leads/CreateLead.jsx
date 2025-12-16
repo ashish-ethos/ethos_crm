@@ -68,6 +68,8 @@ const CreateLead = ({ setOpen, open, scroll }) => {
     { name: "Meeting (Done)", value: "meetingDone" },
     { name: "Closed (Won)", value: "closedWon" },
     { name: "Meeting (Attempt)", value: "meetingAttempt" },
+    { name: "Not Interested", value: "notInterested" },
+    { name: "Not Answering", value: "notAnswering" }
   ];
   const sources = [
     { name: "Instagram", value: "instagram" },
@@ -107,7 +109,7 @@ const CreateLead = ({ setOpen, open, scroll }) => {
 
     const cleanedData = {
       ...leadData,
-      property: leadData.property === "" ? undefined : leadData.property, 
+      property: leadData.property === "" ? undefined : leadData.property,
       count: leadCountsToCreate < 1 ? 1 : leadCountsToCreate,
       ...followUpData,
     };

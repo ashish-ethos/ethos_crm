@@ -26,37 +26,41 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
   // const priorities = ["Very Cold", "Cold", "Moderate", "Hot", "Very Hot"];
 
   const statuses = [
-    "New",
-    "Closed(Won)",
-    "Closed(Lost)",
-    "Followed Up(Call)",
-    "Followed Up(Email)",
-    "Contacted Client(Call)",
-    "Contacted Client(Call Attempt)",
-    "Contacted Client(Email)",
-    "Meeting(Done)",
-    "Meeting(Attempt)",
+    { name: "New", value: "new" },
+    { name: "Closed(Won)", value: "closedWon" },
+    { name: "Closed(Lost)", value: "closedLost" },
+    { name: "Followed Up(Call)", value: "followedUpCall" },
+    { name: "Followed Up(Email)", value: "followedUpEmail" },
+    { name: "Contacted Client(Call)", value: "contactedClientCall" },
+    { name: "Contacted Client(Call Attempt)", value: "contactedClientCallAttempt" },
+    { name: "Contacted Client(Email)", value: "contactedClientEmail" },
+    { name: "Meeting(Done)", value: "meetingDone" },
+    { name: "Meeting(Attempt)", value: "meetingAttempt" },
+    { name: "Not Interested", value: "notInterested" },
+    { name: "Not Answering", value: "notAnswering" }
   ];
+
   const sources = [
-    "Facebook",
-    "Instagram",
-    "Google",
-    "Facebook Comments",
-    "Friend and Family",
-    "Direct Call",
-    "Referral",
+    { name: "Instagram", value: "instagram" },
+    { name: "Facebook Comment", value: "facebookComment" },
+    { name: "Friend and Family", value: "FriendAndFamily" },
+    { name: "Facebook", value: "facebook" },
+    { name: "Direct Call", value: "directCall" },
+    { name: "Google", value: "google" },
+    { name: "Referral", value: "referral" },
   ];
   const degrees = [
-    "Bacholers",
-    "Masters",
-    "PHD",
-    "Other"
-  ]
+    { name: "Bacholers", value: "bacholers" },
+    { name: "Masters", value: "masters" },
+    { name: "PHD", value: "phd" },
+    { name: "Diploma", value: "diploma" },
+    { name: "Other", value: "other" },
+  ];
   const visa = [
-    "Student Visa",
-    "Visit Visa"
-  ]
-  const initialFilterState = { city: '', startingDate: '', endingDate: '', status: '', priority: '', country: '', degree: '', visa: ''}
+    { name: "Student Visa", value: "studentVisa" },
+    { name: "Visit Visa", value: "visitVisa" },
+  ];
+  const initialFilterState = { city: '', startingDate: '', endingDate: '', status: '', priority: '', country: '', degree: '', visa: '' }
   //////////////////////////////// STATES ///////////////////////////////////////////////////
   const [filters, setFilters] = useState(initialFilterState)
 
@@ -64,6 +68,7 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
 
   //////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////
   const handleFilter = () => {
+    console.log("APPLY FILTERS:", filters);
     dispatch(filterLeadReducer(filters))
     setIsFiltered(true)
     setFilters(initialFilterState)
@@ -92,7 +97,7 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
             disablePortal
             id="combo-box-demo"
             options={indianCities}
-            onSelect={(e) => handleChange('city', e.target.value)}
+            onChange={(event, value) => handleChange('city', value)}
             className="w-full"
             renderInput={(params) => (
               <TextField {...params} autoComplete="false" fullWidth label="City" />
@@ -102,13 +107,12 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
             size="small"
             disablePortal
             options={priorities}
-            getOptionLabel={(option) => option.name} // Customize the displayed option
-            getOptionSelected={(option, value) => option.value === value} // Compare by the 'value' property
-            onChange={(e, input) => handleChange('priority', input.value)} // Handle the selected value
-            className="w-full"
-            renderInput={(params) => <TextField   {...params} autoComplete="false" label="Priority" fullWidth />}
+            getOptionLabel={(option) => option.name}
+            onChange={(event, value) => handleChange('priority', value?.value || '')}
+            renderInput={(params) => (
+              <TextField {...params} label="Priority" fullWidth />
+            )}
           />
-
           <div className="flex flex-col">
             <div>Date : </div>
             <div className="flex gap-3">
@@ -116,7 +120,7 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DesktopDatePicker"]}>
                     <DesktopDatePicker
-                      onChange={(date) => handleChange("startingDate", date.$d)}
+                      onChange={(date) => handleChange("startingDate", date ? date.$d : '')}
                       slotProps={{ textField: { size: "small", maxWidth: 200 } }}
                       label="From"
                     />
@@ -129,7 +133,7 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
                     <DesktopDatePicker
                       className="w-3/6"
                       label="To"
-                      onChange={(date) => handleChange("endingDate", date.$d)}
+                      onChange={(date) => handleChange("endingDate", date ? date.$d : '')}
                       slotProps={{ textField: { size: "small" } }}
                     />
                   </DemoContainer>
@@ -142,7 +146,7 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
             disablePortal
             id="combo-box-demo"
             options={countries.map((country) => country.name)}
-            onSelect={(e) => handleChange('country', e.target.value)}
+            onChange={(event, value) => handleChange('country', value)}
             className="w-full"
             renderInput={(params) => (
               <TextField {...params} autoComplete="false" fullWidth label="Country" />
@@ -151,46 +155,44 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
           <Autocomplete
             size="small"
             disablePortal
-            id="combo-box-demo"
             options={degrees}
-            onSelect={(e) => handleChange('degree', e.target.value)}
-            className="w-full"
+            getOptionLabel={(option) => option.name}
+            onChange={(event, value) => handleChange('degree', value?.value || '')}
             renderInput={(params) => (
-              <TextField {...params} autoComplete="false" fullWidth label="Degree" />
+              <TextField {...params} label="Degree" fullWidth />
             )}
           />
           <Autocomplete
             size="small"
             disablePortal
-            id="combo-box-demo"
             options={visa}
-            onSelect={(e) => handleChange('visa', e.target.value)}
-            className="w-full"
+            getOptionLabel={(option) => option.name}
+            onChange={(event, value) => handleChange('visa', value?.value || '')}
             renderInput={(params) => (
-              <TextField {...params} autoComplete="false" fullWidth label="Visa" />
-            )}
-          />
-          <Autocomplete
-            size="small"
-            disablePortal
-            id="combo-box-demo"
-            options={statuses}
-            onSelect={(e) => handleChange('status', e.target.value)}
-            className="w-full"
-            renderInput={(params) => (
-              <TextField {...params} autoComplete="false" fullWidth label="Status" />
+              <TextField {...params} label="Visa" fullWidth />
             )}
           />
 
           <Autocomplete
             size="small"
             disablePortal
-            id="combo-box-demo"
-            options={sources}
-            onSelect={(e) => handleChange('source', e.target.value)}
-            className="w-full"
+            options={statuses}
+            getOptionLabel={(option) => option.name}
+            onChange={(event, selectedOption) => {
+              handleChange("status", selectedOption?.value || "");
+            }}
             renderInput={(params) => (
-              <TextField {...params} autoComplete="false" fullWidth label="Source" />
+              <TextField {...params} label="Status" fullWidth />
+            )}
+          />
+          <Autocomplete
+            size="small"
+            disablePortal
+            options={sources}
+            getOptionLabel={(option) => option.name}
+            onChange={(event, value) => handleChange('source', value?.value || '')}
+            renderInput={(params) => (
+              <TextField {...params} label="Source" fullWidth />
             )}
           />
 

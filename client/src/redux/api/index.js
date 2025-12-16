@@ -199,3 +199,18 @@ export const getTranscripts = () => API.get(`/trasncript/get/all`)
 export const createTranscript = (transcriptData) => API.post(`/trasncript/create`, transcriptData)
 export const updateTranscript = (transcriptId, transcriptData) => API.put(`/trasncript/update/${transcriptId}`, transcriptData)
 export const deleteTranscript = (transcriptId) => API.delete(`/trasncript/delete/${transcriptId}`)
+
+
+
+// GOOGLE CAMPAIGN
+export const getGoogleCampaigns = () => API.get('/campaign')
+export const createGoogleCampaign = (data) => API.post('/campaign', data)
+export const updateGoogleCampaign = (id, data) => API.put(`/campaign/${id}`, data)
+export const deleteGoogleCampaign = (id) => API.delete(`/campaign/${id}`)
+export const cloneGoogleCampaign = (id) => API.post(`/campaign/${id}/clone`)
+
+// SHUFFLE LEADS
+export const getShuffleLeads = () => API.get(`/lead/get/shuffle`);
+export const assignShuffledLead = (leadId, assignedTo) => API.put(`/lead/shuffle/assign/${leadId}`, { assignedTo });
+export const bulkShuffleLeads = (data) =>  API.post(`/lead/shuffle/bulk`, data);
+export const filterAndShuffleLeads = (filters) =>  API.post(`/lead/shuffle/filter`, filters);
