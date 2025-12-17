@@ -82,3 +82,10 @@
 #filebase_image > input[type="file"] {
   display: none;
 }
+.rbc-event {
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  border: none;
+}

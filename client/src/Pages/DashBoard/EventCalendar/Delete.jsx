@@ -1,56 +1,51 @@
-import {
-    Modal,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    DialogContentText,
-  } from "@mui/material";
-  import React from "react";
-  import { deleteEvent } from "../../../redux/action/event";
-  import { useDispatch, useSelector } from "react-redux";
-  
-  const DeleteModal = ({ open, setOpen, eventId }) => {
-    ////////////////////////////////////// VARIABLES ///////////////////////////////////////
-    const dispatch = useDispatch();
-    const { isFetching } = useSelector((state) => state.event);
-  
-    ////////////////////////////////////// FUNCTIONS ///////////////////////////////////////
-    const handleClose = () => {
-      setOpen(false);
-    };
-    const handleDelete = () => {
-      dispatch(deleteEvent(eventId));
-      setOpen(false);
-    };
-  
-    return (
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle id="alert-dialog-title">
-          <div className="font-primary text-sky-500">Delete the Event?</div>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <div className="font-primary">Are you sure you want to delete this event?</div>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions className="mr-4 mb-2">
+import { useDispatch } from "react-redux";
+import { IoMdClose } from "react-icons/io";
+import Modal from "./Modal";
+import { deleteEvent } from "../../../redux/action/event";
+
+const Delete = ({ open, setOpen, eventId }) => {
+  const dispatch = useDispatch();
+
+  return (
+    <Modal open={open}>
+      <div className="relative px-6 py-5">
+        {/* Close Icon */}
+        <button
+          onClick={() => setOpen(false)}
+          className="absolute right-4 top-4 rounded-full border p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
+          aria-label="Close modal"
+        >
+          <IoMdClose size={18} />
+        </button>
+
+        <h2 className="text-lg font-semibold text-gray-900">
+          Delete Event?
+        </h2>
+
+        <p className="mt-2 text-sm text-gray-600">
+          Are you sure you want to delete this event?
+        </p>
+
+        <div className="mt-6 flex justify-end gap-5 text-sm">
           <button
-            className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg font-primary"
-            onClick={handleClose}>
+            onClick={() => setOpen(false)}
+            className="text-gray-500 hover:text-gray-800"
+          >
             Cancel
           </button>
           <button
-            className="bg-red-400 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-primary"
-            onClick={handleDelete}
-            autoFocus>
+            onClick={() => {
+              dispatch(deleteEvent(eventId));
+              setOpen(false);
+            }}
+            className="font-medium text-red-600 hover:text-red-700"
+          >
             Delete
           </button>
-        </DialogActions>
-      </Dialog>
-    );
-  };
-  
-  export default DeleteModal;
-  
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
+export default Delete;
