@@ -1,140 +1,141 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import {
-  Divider,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Slide,
-  DialogActions,
-  TextField,
-} from "@mui/material";
-import { PiUser, PiXLight } from "react-icons/pi";
-import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { useDispatch } from "react-redux";
+import { IoMdClose } from "react-icons/io";
+import { MdEdit, MdTitle, MdDescription, MdCalendarToday, MdAccessTime } from "react-icons/md";
+import Modal from "./Modal";
 import { updateEvent } from "../../../redux/action/event";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
-
-const Update = ({ setOpen, open, event }) => {
-  //////////////////////////////////////// VARIABLES ////////////////////////////////////
+const Update = ({ open, setOpen, event }) => {
   const dispatch = useDispatch();
-  const { isFetching } = useSelector((state) => state.event);
-  let initialEventState = { title: "", description: "", start: "", end: "" };
+  const [data, setData] = useState(event);
 
-  //////////////////////////////////////// STATES ////////////////////////////////////
-  const [eventData, setEventData] = useState(event);
-
-  //////////////////////////////////////// USE EFFECTS ////////////////////////////////
   useEffect(() => {
-    setEventData(event);
+    setData(event);
   }, [event]);
 
-  //////////////////////////////////////// FUNCTIONS //////////////////////////////////
-  const handleSubmit = (e) => {
-    dispatch(updateEvent(event._id, eventData));
-    setOpen(false);
-  };
-
-  const handleChange = (field, value) => {
-    setEventData((pre) => ({ ...pre, [field]: value }));
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  if (!data) return null;
 
   return (
-    <div>
-      <Dialog
-        open={open}
-        scroll={"paper"}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        fullWidth="sm"
-        maxWidth="md"
-        aria-describedby="alert-dialog-slide-description">
-        <DialogTitle className="flex items-center justify-between">
-          <div className="text-sky-400 font-primary">Add New Event</div>
-          <div className="cursor-pointer" onClick={handleClose}>
-            <PiXLight className="text-[25px]" />
-          </div>
-        </DialogTitle>
-        <DialogContent>
-          <div className="flex flex-col gap-2 p-3 text-gray-500 font-primary">
-            <table className="mt-4">
-              <tr>
-                <td className="pb-4 text-lg">Title </td>
-                <td className="pb-4">
-                  <TextField
-                    name="title"
-                    value={eventData?.title}
-                    onChange={(e) => handleChange("title", e.target.value)}
-                    size="small"
-                    fullWidth
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td className="pb-4 text-lg">Description </td>
-                <td className="pb-4">
-                  <TextField
-                    name="description"
-                    value={eventData?.description}
-                    onChange={(e) => handleChange("description", e.target.value)}
-                    size="small"
-                    fullWidth
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td className="pb-4 text-lg">Starting Date </td>
-                <td className="pb-4">
-                  <TextField
-                    type="date"
-                    value={eventData?.start}
-                    onChange={(e) => handleChange("start", e.target.value)}
-                    size="small"
-                    fullWidth
-                  />
-                </td>
-              </tr>
+    <Modal open={open}>
+      <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden max-w-lg w-full">
+        {/* Gradient Header */}
+        <div className="h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
 
-              <tr>
-                <td className="pb-4 text-lg">Ending Date </td>
-                <td className="pb-4">
-                  <TextField
-                    type="date"
-                    value={eventData?.end}
-                    onChange={(e) => handleChange("end", e.target.value)}
-                    size="small"
-                    fullWidth
-                  />
-                </td>
-              </tr>
-            </table>
+        <div className="px-8 py-7">
+          {/* Close Button */}
+          <button
+            onClick={() => setOpen(false)}
+            className="absolute right-5 border top-5 rounded-full p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-200 hover:rotate-90 transform"
+            aria-label="Close modal"
+          >
+            <IoMdClose size={20} />
+          </button>
+
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-6 pr-8">
+            <div className="p-2.5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+              <MdEdit className="text-white" size={22} />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Update Event
+            </h2>
           </div>
-        </DialogContent>
-        <DialogActions className="mr-4 mb-2">
-          <button
-            className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg font-primary"
-            onClick={handleClose}>
-            Cancel
-          </button>
-          <button
-            className="bg-red-400 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-primary"
-            onClick={handleSubmit}
-            autoFocus>
-            {isFetching ? "Updating..." : "Update"}
-          </button>
-        </DialogActions>
-      </Dialog>
-    </div>
+
+          {/* Form Fields */}
+          <div className="space-y-4">
+            {/* Title Input */}
+            <div className="group">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                <MdTitle className="text-blue-500" size={18} />
+                Event Title
+              </label>
+              <input
+                type="text"
+                className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 hover:border-gray-300"
+                placeholder="Enter event title"
+                value={data.title}
+                onChange={(e) => setData({ ...data, title: e.target.value })}
+              />
+            </div>
+
+            {/* Description Input */}
+            <div className="group">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                <MdDescription className="text-purple-500" size={18} />
+                Description
+              </label>
+              <textarea
+                className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100 hover:border-gray-300 resize-none"
+                rows={3}
+                placeholder="Enter event description"
+                value={data.description}
+                onChange={(e) => setData({ ...data, description: e.target.value })}
+              />
+            </div>
+
+            {/* Date/Time Inputs Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Start Date/Time */}
+              <div className="group">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                  <MdCalendarToday className="text-green-500" size={16} />
+                  Start
+                </label>
+                <div className="relative">
+                  <input
+                    type="datetime-local"
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 transition-all duration-200 focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 hover:border-gray-300"
+                    value={data.start}
+                    onChange={(e) => setData({ ...data, start: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              {/* End Date/Time */}
+              <div className="group">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                  <MdAccessTime className="text-orange-500" size={16} />
+                  End
+                </label>
+                <div className="relative">
+                  <input
+                    type="datetime-local"
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-sm text-gray-900 transition-all duration-200 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 hover:border-gray-300"
+                    value={data.end}
+                    onChange={(e) => setData({ ...data, end: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mt-8 pt-6 border-t border-gray-100 flex gap-3">
+            <button
+              onClick={() => setOpen(false)}
+              className="flex-1 px-5 py-3 bg-gray-100 border text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-all duration-200 transform hover:scale-105"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                dispatch(updateEvent(event._id, data));
+                setOpen(false);
+              }}
+              className="flex-1 flex items-center justify-center gap-2 px-5 py-3 
+                rounded-lg text-sm font-medium text-white
+                bg-gradient-to-r from-blue-500 to-blue-600
+                shadow-md transition-all duration-200
+                hover:shadow-lg hover:from-blue-600 hover:to-blue-700"
+              >
+              <MdEdit size={16} />
+              Update Event
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </Modal>
   );
 };
 

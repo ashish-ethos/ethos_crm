@@ -91,7 +91,8 @@ const statuses = [
     { name: "Contacted Client (Call)", value: 'contactedClientCall' },
     { name: "Contacted Client (Call Attempt)", value: 'contactedClientCallAttempt' },
     { name: "Contacted Client (Email)", value: 'contactedClientEmail' },
-    { name: "Not Interested", value: 'notInterested' }
+    { name: "Not Interested", value: 'notInterested' },
+    { name: "Not Answering", value: 'notAnswering' },
 ];
 
 export const getLeadsStat = async (req, res, next) => {
@@ -247,31 +248,58 @@ export const searchLead = async (req, res, next) => {
     }
 };
 
+const buildFilters = (query) => {
+    const filters = {};
+
+    Object.entries(query).forEach(([key, value]) => {
+        if (!value) return;
+
+        if (key === "startingDate" || key === "endingDate") return;
+
+        if (typeof value === "string" && value.includes(",")) {
+            filters[key] = {
+                $in: value.split(",").map(v => v.trim()).filter(Boolean),
+            };
+            return;
+        }
+
+        filters[key] = { $regex: `^${value}$`, $options: "i" };
+    });
+
+    return filters;
+};
+
 export const filterLead = async (req, res, next) => {
-    const { startingDate, endingDate, ...filters } = req.query;
+    const { startingDate, endingDate } = req.query;
 
     try {
+        const filters = buildFilters(req.query);
+
         let query = Lead.find(filters);
 
         if (startingDate && isValidDate(startingDate)) {
             const startDate = new Date(startingDate);
             startDate.setHours(0, 0, 0, 0);
-            query = query.where('createdAt').gte(startDate);
+            query = query.where("createdAt").gte(startDate);
         }
 
         if (endingDate && isValidDate(endingDate)) {
             const endDate = new Date(endingDate);
             endDate.setHours(23, 59, 59, 999);
-
-            if (query.model.modelName === 'Lead') {
-                query = query.where('createdAt').lte(endDate);
-            }
+            query = query.where("createdAt").lte(endDate);
         }
+  
+        const leads = await query
+            .populate("property")
+            .populate("client")
+            .populate("allocatedTo")
+            .exec();
 
-        query = await query.populate('property').populate('client').populate('allocatedTo').exec();
-        query = await query.populate('client').populate('allocatedTo').exec();
-
-        res.status(200).json({ result: query });
+        res.status(200).json({
+            result: leads,
+            success: true,
+            message: "Leads filtered successfully",
+        });
     } catch (error) {
         next(createError(500, error.message));
     }
@@ -654,33 +682,33 @@ export const bulkShuffleLeads = async (req, res, next) => {
  * Body same as bulkShuffleLeads but this endpoint returns shuffled leads only.
  */
 export const filterAndShuffleLeads = async (req, res, next) => {
-  try {
-    const { period = 'date', startingDate, endingDate, status, limit } = req.body;
-    const filter = { isArchived: { $ne: true } };
+    try {
+        const { period = 'date', startingDate, endingDate, status, limit } = req.body;
+        const filter = { isArchived: { $ne: true } };
 
-    // FIX: Remove forced 'notInterested'
-    if (status && Array.isArray(status) && status.length > 0) {
-      filter.status = { $in: status };
+        // FIX: Remove forced 'notInterested'
+        if (status && Array.isArray(status) && status.length > 0) {
+            filter.status = { $in: status };
+        }
+        // If no status → allow all non-archived leads
+
+        const { startDate, endDate } = getRangeFromPeriod(period, startingDate, endingDate);
+        if (startDate) filter.createdAt = { ...(filter.createdAt || {}), $gte: startDate };
+        if (endDate) filter.createdAt = { ...(filter.createdAt || {}), $lte: endDate };
+
+        let query = Lead.find(filter).populate('client').populate('property').populate('allocatedTo');
+        if (Number(limit) && Number(limit) > 0) query = query.limit(Number(limit));
+
+        let leads = await query.exec();
+        leads = fisherYatesShuffle(leads);
+
+        res.status(200).json({
+            result: leads,
+            total: leads.length,
+            message: 'Filtered leads shuffled (preview)',
+            success: true,
+        });
+    } catch (err) {
+        next(createError(500, err.message || err));
     }
-    // If no status → allow all non-archived leads
-
-    const { startDate, endDate } = getRangeFromPeriod(period, startingDate, endingDate);
-    if (startDate) filter.createdAt = { ...(filter.createdAt || {}), $gte: startDate };
-    if (endDate) filter.createdAt = { ...(filter.createdAt || {}), $lte: endDate };
-
-    let query = Lead.find(filter).populate('client').populate('property').populate('allocatedTo');
-    if (Number(limit) && Number(limit) > 0) query = query.limit(Number(limit));
-
-    let leads = await query.exec();
-    leads = fisherYatesShuffle(leads);
-
-    res.status(200).json({
-      result: leads,
-      total: leads.length,
-      message: 'Filtered leads shuffled (preview)',
-      success: true,
-    });
-  } catch (err) {
-    next(createError(500, err.message || err));
-  }
 };

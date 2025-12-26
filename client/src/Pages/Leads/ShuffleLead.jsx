@@ -1,5 +1,4 @@
-// client/src/Pages/Leads/ShuffleLead.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Drawer,
   Box,
@@ -19,15 +18,16 @@ import {
   Chip,
   TextField,
 } from "@mui/material";
-import {
-  Close,
-  KeyboardArrowDown,
-  CheckBox,
-  CheckBoxOutlineBlank,
-  IndeterminateCheckBox,
-} from "@mui/icons-material";
+import { Close, KeyboardArrowDown } from "@mui/icons-material";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
-import { filterShuffleLeadsAction, bulkShuffleLeadsAction } from "../../redux/action/lead";
+import {
+  filterShuffleLeadsAction,
+  bulkShuffleLeadsAction,
+  getLeads,
+} from "../../redux/action/lead";
 import toast from "react-hot-toast";
 import { getEmployees } from "../../redux/api";
 
@@ -43,27 +43,23 @@ const statusOptions = [
   { value: "notAnswering", label: "Not Answering" },
 ];
 
-const MenuProps = {
-  PaperProps: {
-    style: { maxHeight: 300, width: 300 },
-  },
+const defaultForm = {
+  period: "date",
+  startingDate: null,
+  endingDate: null,
+  status: [],
+  limit: "",
+  employees: [],
 };
+
 
 const ShuffleLead = ({ open, setOpen }) => {
   const dispatch = useDispatch();
   const { isFetching } = useSelector((state) => state.lead);
 
-  const [form, setForm] = useState({
-    period: "date",
-    startingDate: "",
-    endingDate: "",
-    status: [],
-    limit: "",
-    employees: [],
-  });
-
+  const [form, setForm] = useState(defaultForm);
   const [preview, setPreview] = useState(null);
-  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [employeesList, setEmployeesList] = useState([]);
 
   useEffect(() => {
@@ -74,98 +70,99 @@ const ShuffleLead = ({ open, setOpen }) => {
         const { data } = await getEmployees();
         if (data?.success && Array.isArray(data.result)) {
           setEmployeesList(data.result);
-          setForm(prev => ({ ...prev, employees: data.result.map(e => e._id) }));
+          setForm((p) => ({
+            ...p,
+            employees: data.result.map((e) => e._id),
+          }));
         }
-      } catch (err) {
+      } catch {
         toast.error("Failed to load employees");
       }
     };
+
     fetchEmployees();
   }, [open]);
 
-  const allEmployeeIds = employeesList.map(e => e._id);
-  const isAllSelected = form.employees.length === allEmployeeIds.length && allEmployeeIds.length > 0;
+  const allEmployeeIds = employeesList.map((e) => e._id);
+  const isAllSelected =
+    form.employees.length === allEmployeeIds.length &&
+    allEmployeeIds.length > 0;
 
   const handleSelectAll = () => {
-    setForm(prev => ({
-      ...prev,
-      employees: isAllSelected ? [] : allEmployeeIds
+    setForm((p) => ({
+      ...p,
+      employees: isAllSelected ? [] : allEmployeeIds,
     }));
   };
 
-  const handleEmployeeChange = (event) => {
-    const value = event.target.value;
-    setForm(prev => ({ ...prev, employees: typeof value === "string" ? value.split(",") : value }));
+  const handleReset = () => {
+    setForm(defaultForm);
+    setPreview(null);
   };
 
-  const handleStatusChange = (event) => {
-    const value = event.target.value;
-    setForm(prev => ({ ...prev, status: typeof value === "string" ? value.split(",") : value }));
-  };
+  const handleApplyShuffle = async () => {
+    if (!form.employees.length) {
+      toast.error("Please select at least one employee");
+      return;
+    }
 
-  const handlePreview = async () => {
-    if (form.employees.length === 0) return toast.error("Please select at least one employee");
-
-    setLoadingPreview(true);
+    setLoading(true);
     setPreview(null);
 
-    try {
-      const result = await dispatch(filterShuffleLeadsAction({ ...form }));
-      const res = result?.payload;
+    const payload = {
+      period: form.period,
+      status: form.status,
+      limit: form.limit,
+      employees: form.employees,
+    };
 
-      if (res?.success) {
-        setPreview(res);
-        toast.success(`${res.total} leads ready to distribute`);
-      } else {
-        toast.error(res?.message || "No leads found");
+    if (form.period === "range") {
+      payload.startingDate = dayjs(form.startingDate).format("YYYY-MM-DD");
+      payload.endingDate = dayjs(form.endingDate).format("YYYY-MM-DD");
+    }
+
+    console.log("Shuffle payload:", payload);
+
+    try {
+      const previewData = await dispatch(filterShuffleLeadsAction(payload));
+
+      if (!previewData?.success || previewData.total === 0) {
+        toast.error("No leads found");
+        return;
       }
+
+      setPreview(previewData);
+
+      await dispatch(bulkShuffleLeadsAction(payload));
+
+      await dispatch(getLeads());
+
+      toast.success(`Distributed ${previewData.total} leads`);
+      setOpen(false);
+      handleReset();
     } catch (err) {
-      toast.error("Preview failed");
+      toast.error("Shuffle failed");
     } finally {
-      setLoadingPreview(false);
+      setLoading(false);
     }
-  };
-
-  const handleDistribute = async () => {
-    if (!preview) return;
-
-    try {
-      const result = await dispatch(bulkShuffleLeadsAction({ ...form }));
-      const res = result?.payload;
-
-      if (res?.success) {
-        toast.success(`Successfully distributed ${preview.total} leads!`);
-        setOpen(false);
-        setPreview(null);
-      } else {
-        toast.error(res?.message || "Distribution failed");
-      }
-    } catch (err) {
-      toast.error("Distribution failed");
-    }
-  };
-
-  const getProjectedCount = () => {
-    if (!preview || form.employees.length === 0) return {};
-    const count = {};
-    form.employees.forEach((id, i) => {
-      const emp = employeesList.find(e => e._id === id);
-      const leads = Math.floor(preview.total / form.employees.length) +
-        (i < preview.total % form.employees.length ? 1 : 0);
-      count[emp?.username || "Unknown"] = leads;
-    });
-    return count;
   };
 
   return (
     <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
-      <Box sx={{ width: 440, height: "100vh", display: "flex", flexDirection: "column" }}>
+      <Box
+        sx={{
+          width: 440,
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {/* Header */}
-        <Box className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50">
-          <Typography variant="h6" className="font-bold text-primary-blue">
+        <Box className="p-4 border-b flex justify-between items-center bg-blue-50">
+          <Typography variant="h6" fontWeight={600}>
             Distribute Leads
           </Typography>
-          <IconButton onClick={() => setOpen(false)} className="hover:bg-white/50">
+          <IconButton onClick={() => setOpen(false)}>
             <Close />
           </IconButton>
         </Box>
@@ -174,16 +171,16 @@ const ShuffleLead = ({ open, setOpen }) => {
         <Box className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {/* Time Period */}
           <FormControl fullWidth>
-            <InputLabel className="text-gray-700 font-medium">Time Period</InputLabel>
+            <InputLabel>Time Period</InputLabel>
             <Select
               value={form.period}
-              label="Time Period"
-              onChange={(e) => setForm(prev => ({ ...prev, period: e.target.value }))}
-              className="bg-white"
+              onChange={(e) =>
+                setForm((p) => ({ ...p, period: e.target.value }))
+              }
               IconComponent={KeyboardArrowDown}
             >
-              {periods.map(p => (
-                <MenuItem key={p.value} value={p.value} className="hover:bg-blue-50">
+              {periods.map((p) => (
+                <MenuItem key={p.value} value={p.value}>
                   {p.label}
                 </MenuItem>
               ))}
@@ -192,100 +189,124 @@ const ShuffleLead = ({ open, setOpen }) => {
 
           {/* Custom Range */}
           {form.period === "range" && (
-            <Box className="grid grid-cols-2 gap-4">
-              <TextField
-                type="date"
-                label="From"
-                InputLabelProps={{ shrink: true }}
-                value={form.startingDate}
-                onChange={(e) => setForm(prev => ({ ...prev, startingDate: e.target.value }))}
-                className="bg-white"
-              />
-              <TextField
-                type="date"
-                label="To"
-                InputLabelProps={{ shrink: true }}
-                value={form.endingDate}
-                onChange={(e) => setForm(prev => ({ ...prev, endingDate: e.target.value }))}
-                className="bg-white"
-              />
-            </Box>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <DatePicker
+                  label="From"
+                  value={form.startingDate}
+                  onChange={(v) =>
+                    setForm((p) => ({ ...p, startingDate: v }))
+                  }
+                />
+                <DatePicker
+                  label="To"
+                  value={form.endingDate}
+                  onChange={(v) =>
+                    setForm((p) => ({ ...p, endingDate: v }))
+                  }
+                />
+              </Box>
+            </LocalizationProvider>
           )}
 
           {/* Filter by Status */}
           <FormControl fullWidth>
-            <InputLabel className="text-gray-700 font-medium">Filter by Status</InputLabel>
+            <InputLabel>Filter by Status</InputLabel>
             <Select
               multiple
               value={form.status}
-              onChange={handleStatusChange}
+              onChange={(e) => {
+                const value = e.target.value;
+                setForm((p) => ({
+                  ...p,
+                  status: typeof value === "string" ? value.split(",") : value,
+                }));
+              }}
               input={<OutlinedInput label="Filter by Status" />}
               renderValue={(selected) => (
-                <Box className="flex flex-wrap gap-1">
-                  {selected.map((value) => {
-                    const opt = statusOptions.find(o => o.value === value);
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((val) => {
+                    const opt = statusOptions.find((o) => o.value === val);
                     return (
                       <Chip
-                        key={value}
-                        label={opt?.label}
+                        key={val}
                         size="small"
-                        className="bg-red-100 text-red-700 border-red-300"
+                        label={opt?.label || val}
                       />
                     );
                   })}
                 </Box>
               )}
-              MenuProps={MenuProps}
-              IconComponent={KeyboardArrowDown}
             >
-              {statusOptions.map(({ value, label }) => (
-                <MenuItem key={value} value={value}>
-                  <Checkbox checked={form.status.includes(value)} />
-                  <ListItemText primary={label} />
+              {statusOptions.map((s) => (
+                <MenuItem key={s.value} value={s.value}>
+                  <Checkbox checked={form.status.indexOf(s.value) > -1} />
+                  <ListItemText primary={s.label} />
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
 
-          {/* Assign To */}
+
+          {/* Assign To — UI FIXED */}
           <FormControl fullWidth>
-            <InputLabel className="text-gray-700 font-medium">Assign To</InputLabel>
+            <InputLabel>Assign To</InputLabel>
             <Select
               multiple
               value={form.employees}
-              onChange={handleEmployeeChange}
+              onChange={(e) =>
+                setForm((p)({ ...p, employees: e.target.value }))
+              }
               input={<OutlinedInput label="Assign To" />}
+              IconComponent={KeyboardArrowDown}
               renderValue={(selected) => (
-                <Box className="flex flex-wrap gap-1">
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.length === employeesList.length ? (
-                    <Chip label="All Employees" color="primary" size="small" />
+                    <Chip size="small" label="All Employees" />
                   ) : (
                     selected.map((id) => {
-                      const emp = employeesList.find(e => e._id === id);
-                      return <Chip key={id} label={emp?.firstName} size="small" />;
+                      const emp = employeesList.find((e) => e._id === id);
+                      return (
+                        <Chip
+                          key={id}
+                          size="small"
+                          label={emp?.firstName}
+                        />
+                      );
                     })
                   )}
                 </Box>
               )}
-              MenuProps={MenuProps}
-              IconComponent={KeyboardArrowDown}
+              MenuProps={{
+                PaperProps: {
+                  style: { maxHeight: 260 },
+                },
+              }}
             >
-              {/* All Employees */}
-              <MenuItem className="font-semibold bg-gray-50">
+              <MenuItem sx={{ alignItems: "center" }}>
                 <Checkbox
-                  icon={<CheckBoxOutlineBlank fontSize="small" />}
-                  checkedIcon={isAllSelected ? <CheckBox /> : <IndeterminateCheckBox color="primary" />}
                   checked={isAllSelected}
-                  indeterminate={form.employees.length > 0 && !isAllSelected}
+                  indeterminate={
+                    form.employees.length > 0 && !isAllSelected
+                  }
                   onChange={handleSelectAll}
                 />
-                <ListItemText primary={`All Employees (${employeesList.length})`} />
+                <ListItemText
+                  primary={`All Employees (${employeesList.length})`}
+                />
               </MenuItem>
+
               <Divider />
 
               {employeesList.map((emp) => (
-                <MenuItem key={emp._id} value={emp._id}>
-                  <Checkbox checked={form.employees.includes(emp._id)} />
+                <MenuItem
+                  key={emp._id}
+                  value={emp._id}
+                  sx={{ alignItems: "center" }}
+                >
+                  <Checkbox
+                    checked={form.employees.includes(emp._id)}
+                  />
                   <ListItemText
                     primary={`${emp.firstName} ${emp.lastName}`}
                     secondary={`@${emp.username}`}
@@ -295,59 +316,28 @@ const ShuffleLead = ({ open, setOpen }) => {
             </Select>
           </FormControl>
 
-          {/* Limit */}
-          <TextField
-            fullWidth
-            label="Limit Leads (Optional)"
-            type="number"
-            placeholder="e.g. 100"
-            value={form.limit}
-            onChange={(e) => setForm(prev => ({ ...prev, limit: e.target.value }))}
-            className="bg-white"
-          />
-
-          {/* Preview */}
           {preview && (
-            <Alert severity="info" className="bg-blue-50 border-blue-200">
-              <Typography className="font-bold text-primary-blue">
-                {preview.total} leads will be distributed
-              </Typography>
-              <Box className="mt-2 space-y-1">
-                {Object.entries(getProjectedCount()).map(([name, count]) => (
-                  <Box key={name} className="flex justify-between">
-                    <span className="font-medium">{name}</span>
-                    <span className="font-bold text-primary-blue">{count} leads</span>
-                  </Box>
-                ))}
-              </Box>
+            <Alert severity="info">
+              {preview.total} leads will be distributed
             </Alert>
           )}
         </Box>
 
-        {/* Bottom Buttons */}
-        <Box className="p-6 border-t bg-gray-50 space-y-2">
-          <Button
-            fullWidth
-            variant="outlined"
-            size="large"
-            onClick={handlePreview}
-            disabled={loadingPreview || isFetching || form.employees.length === 0}
-            startIcon={loadingPreview ? <CircularProgress size={20} /> : null}
-            className="text-primary-blue border-blue-700 hover:bg-blue-50"
-          >
-            {loadingPreview ? "Loading Preview..." : "Preview Distribution"}
+        {/* Footer */}
+        <Box className="p-6 border-t space-y-2">
+          <Button fullWidth variant="outlined" onClick={handleReset}>
+            RESET FILTER
           </Button>
 
           <Button
             fullWidth
             variant="contained"
             color="success"
-            size="large"
-            onClick={handleDistribute}
-            disabled={!preview || isFetching}
-            className="bg-green-600 hover:bg-green-700"
+            onClick={handleApplyShuffle}
+            disabled={loading || isFetching}
+            startIcon={loading && <CircularProgress size={18} />}
           >
-            {isFetching ? "Distributing..." : "Confirm & Distribute"}
+            APPLY SHUFFLE
           </Button>
         </Box>
       </Box>
