@@ -5,7 +5,6 @@ import Cashbook from '../models/cashbook.js'
 import Notification from '../models/notification.js'
 import { createError } from '../utils/error.js'
 
-
 export const getRefund = async (req, res, next) => {
     try {
 
@@ -81,6 +80,7 @@ export const updateRefund = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
+
 export const acceptRefund = async (req, res, next) => {
     try {
 
@@ -107,6 +107,7 @@ export const acceptRefund = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
+
 export const rejectRefund = async (req, res, next) => {
     try {
 
@@ -144,7 +145,6 @@ export const deleteRefund = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
-
 
 export const deleteWholeCollection = async (req, res, next) => {
     try {

@@ -14,7 +14,6 @@ const userSchema = Schema({
     uid: { type: String },
 }, { timestamps: true })
 
-
 // Before saving a new document, generate a unique readable identifier
 userSchema.pre('save', async function (next) {
     if (!this.uid) {

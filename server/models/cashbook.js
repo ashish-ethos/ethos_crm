@@ -12,7 +12,6 @@ const cashbookSchema = Schema({
     uid: { type: String },
 }, { timestamps: true })
 
-
 // Before saving a new document, generate a unique readable identifier
 cashbookSchema.pre('save', async function (next) {
     if (!this.uid) {
@@ -36,7 +35,6 @@ cashbookSchema.pre('save', async function (next) {
     }
     next();
 });
-
 
 const cashbookModel = model('Cashbook', cashbookSchema)
 export default cashbookModel

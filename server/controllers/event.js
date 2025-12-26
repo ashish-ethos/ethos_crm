@@ -81,7 +81,6 @@ export const deleteEvent = async (req, res, next) => {
     }
 }
 
-
 export const deleteWholeCollection = async (req, res, next) => {
     try {
 

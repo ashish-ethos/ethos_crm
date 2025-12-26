@@ -58,6 +58,7 @@ export const createVoucherApproval = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
+
 export const acceptVoucherApproval = async (req, res, next) => {
     try {
 
@@ -89,6 +90,7 @@ export const acceptVoucherApproval = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
+
 export const rejectVoucherApproval = async (req, res, next) => {
     try {
 
@@ -118,8 +120,6 @@ export const rejectVoucherApproval = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
-
-
 
 export const createRefundApproval = async (req, res, next) => {
     try {

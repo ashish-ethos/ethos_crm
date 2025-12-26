@@ -274,3 +274,4 @@ export const setNewPassword = async (req, res) => {
       });
   }
 };
+

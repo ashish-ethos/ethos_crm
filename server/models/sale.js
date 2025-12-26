@@ -11,7 +11,6 @@ const saleSchema = Schema({
     uid: { type: String },
 }, { timestamps: true })
 
-
 // Before saving a new document, generate a unique readable identifier
 saleSchema.pre('save', async function (next) {
     if (!this.uid) {

@@ -35,6 +35,7 @@ export const getEmployeeVouchers = async (req, res, next) => {
         next(createError(500, err.message));
     }
 }
+
 export const createVoucher = async (req, res, next) => {
     try {
 

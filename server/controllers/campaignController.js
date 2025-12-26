@@ -142,3 +142,4 @@ export const stats = asyncHandler(async (req, res) => {
 
   res.json({ totals: totals[0] || { totalSpend: 0, totalLeads: 0, campaigns: 0, CPL: 0 }, byType });
 });
+

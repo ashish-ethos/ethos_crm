@@ -2,7 +2,6 @@ import Project from '../models/project.js'
 import Society from '../models/society.js'
 import { createError, isValidDate } from '../utils/error.js'
 
-
 export const getProject = async (req, res, next) => {
     try {
 
@@ -15,7 +14,7 @@ export const getProject = async (req, res, next) => {
     } catch (err) {
         next(createError(500, err.message))
     }
-}
+};
 
 export const getProjects = async (req, res, next) => {
     try {
@@ -26,7 +25,8 @@ export const getProjects = async (req, res, next) => {
     } catch (err) {
         next(createError(500, err.message))
     }
-}
+};
+
 export const searchProject = async (req, res, next) => {
     const { searchTerm } = req.query;
     const { isArchived } = req.body;
@@ -55,7 +55,6 @@ export const searchProject = async (req, res, next) => {
         next(createError(500, error.message));
     }
 };
-
 
 export const filterProject = async (req, res, next) => {
     const { startingDate, endingDate, society, ...filters } = req.query;
@@ -92,7 +91,6 @@ export const filterProject = async (req, res, next) => {
     }
 };
 
-
 export const createProject = async (req, res, next) => {
     try {
 
@@ -106,7 +104,7 @@ export const createProject = async (req, res, next) => {
     } catch (err) {
         next(createError(500, err.message))
     }
-}
+};
 
 export const updateProject = async (req, res, next) => {
     try {
@@ -121,7 +119,7 @@ export const updateProject = async (req, res, next) => {
     } catch (err) {
         next(createError(500, err.message))
     }
-}
+};
 
 export const deleteProject = async (req, res, next) => {
     try {
@@ -136,7 +134,7 @@ export const deleteProject = async (req, res, next) => {
     } catch (err) {
         next(createError(500, err.message))
     }
-}
+};
 
 export const deleteWholeCollection = async (req, res, next) => {
     try {
@@ -147,4 +145,4 @@ export const deleteWholeCollection = async (req, res, next) => {
     } catch (err) {
         next(createError(500, err.message))
     }
-}
+};

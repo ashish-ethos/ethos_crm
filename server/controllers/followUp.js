@@ -38,7 +38,6 @@ export const getFollowUps = async (req, res, next) => {
     }
 }
 
-
 export const getEmployeeFollowUps = async (req, res, next) => {
     try {
         const { leadId } = req.params;
@@ -53,11 +52,6 @@ export const getEmployeeFollowUps = async (req, res, next) => {
         next(createError(500, err.message));
     }
 };
-
-
-
-
-
 
 export const getEmployeeFollowUpsStats = async (req, res, next) => {
     try {
@@ -191,10 +185,6 @@ export const getFollowUpsStats = async (req, res, next) => {
         next(createError(500, error.message));
     }
 };
-
-
-
-
 
 export const createFollowUp = async (req, res, next) => {
     try {

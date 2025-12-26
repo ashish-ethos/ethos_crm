@@ -55,7 +55,6 @@ export const searchSociety = async (req, res, next) => {
     }
 };
 
-
 export const filterSociety = async (req, res, next) => {
     const { startingDate, endingDate, ...filters } = req.query;
     try {

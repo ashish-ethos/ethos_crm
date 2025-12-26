@@ -41,7 +41,6 @@ export const verifyEmployee = (req, res, next) => {
     }
 };
 
-
 export const verifyManager = (req, res, next) => {
     try {
         verifyToken(req, res, () => {
@@ -70,7 +69,6 @@ export const verifySuperAdmin = (req, res, next) => {
         next(createError(500, err.message));
     }
 };
-
 
 export default function (err, req, res, next) {
   console.error(err);

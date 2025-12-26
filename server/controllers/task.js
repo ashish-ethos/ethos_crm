@@ -27,7 +27,6 @@ export const getTask = async (req, res, next) => {
     }
 };
 
-
 export const getUserTasks = async (req, res, next) => {
     try {
         const tasks = await Task.find({ userId: req.user._id });

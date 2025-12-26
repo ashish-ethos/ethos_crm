@@ -18,6 +18,7 @@ export const getCashbooks = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
+
 export const getEmployeeCashbooks = async (req, res, next) => {
     try {
 
@@ -42,6 +43,7 @@ export const getEmployeeCashbooks = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
+
 export const getCashbook = async (req, res, next) => {
     try {
 
@@ -55,7 +57,6 @@ export const getCashbook = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
-
 
 export const getSpecificDateCashbook = async (req, res, next) => {
     try {
@@ -88,6 +89,7 @@ export const getSpecificDateCashbook = async (req, res, next) => {
         next(createError(500, error.message))
     }
 };
+
 export const getIncomeAndExpenses = async (req, res, next) => {
     try {
         const currentYear = new Date().getFullYear();
@@ -155,6 +157,7 @@ export const getIncomeAndExpenses = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
+
 export const getPaymentsStat = async (req, res, next) => {
     try {
 
@@ -235,7 +238,6 @@ export const getLeadCashbooks = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
-
 
 export const createCashbook = async (req, res, next) => {
     try {

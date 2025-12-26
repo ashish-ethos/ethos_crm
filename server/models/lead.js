@@ -19,7 +19,6 @@ const leadSchema = Schema({
     uid: { type: String, },
 }, { timestamps: true })
 
-
 // Before saving a new document, generate a unique readable identifier
 leadSchema.pre('save', async function (next) {
     if (!this.uid) {

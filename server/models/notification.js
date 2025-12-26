@@ -35,6 +35,5 @@ notificationSchema.pre('save', async function (next) {
     next();
 });
 
-
 const notificationModel = model('Notification', notificationSchema)
 export default notificationModel

@@ -12,7 +12,6 @@ const employeeSchema = Schema({
     uid: { type: String },
 }, { timestamps: true })
 
-
 // Before saving a new document, generate a unique readable identifier
 employeeSchema.pre('save', async function (next) {
     if (!this.uid) {
@@ -36,7 +35,6 @@ employeeSchema.pre('save', async function (next) {
     }
     next();
 });
-
 
 const userModel = model('Employee', employeeSchema)
 export default userModel

@@ -36,6 +36,5 @@ followUpSchema.pre('save', async function (next) {
     next();
 });
 
-
 const followUpModel = model('FollowUp', followUpSchema)
 export default followUpModel 

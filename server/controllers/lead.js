@@ -71,6 +71,7 @@ const priorities = [
     { name: "Cold", value: 'cold' },
     { name: "Very Cold", value: 'veryCold' },
 ];
+
 const sources = [
     { name: "Instagram", value: 'instagram' },
     { name: "Facebook", value: 'facebook' },
@@ -80,6 +81,7 @@ const sources = [
     { name: "Google", value: 'google' },
     { name: "Referral", value: 'referral' },
 ];
+
 const statuses = [
     { name: "New", value: 'new' },
     { name: "Closed (Lost)", value: 'closedLost' },
@@ -529,8 +531,6 @@ export const getShuffleLeads = async (req, res, next) => {
     }
 };
 
-
-
 export const assignShuffledLead = async (req, res, next) => {
     try {
         const { leadId } = req.params;
@@ -569,7 +569,6 @@ export const assignShuffledLead = async (req, res, next) => {
         next(createError(500, err.message || err));
     }
 };
-
 
 const fisherYatesShuffle = (arr) => {
     const a = [...arr];
@@ -675,12 +674,12 @@ export const bulkShuffleLeads = async (req, res, next) => {
     }
 };
 
-
 /**
  * POST /shuffle/filter
  * Use when manager wants to preview which leads will be shuffled (no DB assignment).
  * Body same as bulkShuffleLeads but this endpoint returns shuffled leads only.
  */
+
 export const filterAndShuffleLeads = async (req, res, next) => {
     try {
         const { period = 'date', startingDate, endingDate, status, limit } = req.body;
@@ -712,3 +711,4 @@ export const filterAndShuffleLeads = async (req, res, next) => {
         next(createError(500, err.message || err));
     }
 };
+

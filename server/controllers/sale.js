@@ -26,6 +26,7 @@ export const getSales = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
+
 export const getEmployeeSales = async (req, res, next) => {
     try {
 
@@ -44,6 +45,7 @@ export const getEmployeeSales = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
+
 export const getLeadSales = async (req, res, next) => {
     try {
 
@@ -54,6 +56,7 @@ export const getLeadSales = async (req, res, next) => {
         next(createError(500, err.message));
     }
 };
+
 export const createSale = async (req, res, next) => {
     try {
 

@@ -77,7 +77,6 @@ export const searchInventory = async (req, res, next) => {
     }
 };
 
-
 export const filterInventory = async (req, res, next) => {
     const { startingDate, endingDate, minPrice, maxPrice, project, ...filters } = req.query;
 

@@ -15,7 +15,7 @@ export const getNotification = async (req, res, next) => {
     } catch (err) {
         next(createError(500, err.message))
     }
-}
+};
 
 export const getNotifications = async (req, res, next) => {
     try {
@@ -59,7 +59,6 @@ export const getNotifications = async (req, res, next) => {
     }
 };
 
-
 export const createRequestNotification = async (req, res, next) => {
     try {
 
@@ -83,12 +82,7 @@ export const createRequestNotification = async (req, res, next) => {
     } catch (err) {
         next(createError(500, err.message))
     }
-}
-
-
-
-
-
+};
 
 export const deleteNotification = async (req, res, next) => {
     try {
@@ -104,8 +98,7 @@ export const deleteNotification = async (req, res, next) => {
         next(createError(500, err.message))
 
     }
-}
-
+};
 
 export const deleteWholeCollection = async (req, res, next) => {
     try {
@@ -116,4 +109,4 @@ export const deleteWholeCollection = async (req, res, next) => {
     } catch (err) {
         next(createError(500, err.message))
     }
-}
+};

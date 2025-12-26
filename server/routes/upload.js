@@ -1,7 +1,7 @@
 import express from "express"
 const router = express.Router()
 
-import { uploadImage,deleteImage } from "../controllers/upload.js"
+import { uploadImage ,deleteImage } from "../controllers/upload.js"
 import { upload } from "../multer.js"
 
 router.post('/upload_image', upload.single('image'), uploadImage)

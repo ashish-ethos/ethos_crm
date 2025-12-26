@@ -65,7 +65,6 @@ export const filterUser = async (req, res, next) => {
     }
 };
 
-
 export const getClients = async (req, res, next) => {
     try {
 
@@ -118,6 +117,7 @@ export const createClient = async (req, res, next) => {
         next(createError(500, err.message))
     }
 }
+
 export const createEmployee = async (req, res, next) => {
     try {
 
