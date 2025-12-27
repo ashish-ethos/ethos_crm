@@ -56,6 +56,12 @@ const leadSlice = createSlice({
                 if (filters.property && lead.property._id.toString() != filters.property.toString()) return false;
                 if (filters.startingDate && new Date(lead.createdAt) < new Date(filters.startingDate)) return false;
                 if (filters.endingDate && new Date(lead.createdAt) > new Date(filters.endingDate)) return false;
+                if (filters.allocatedTo) {
+                    const isAllocated = lead.allocatedTo?.some(
+                        emp => emp._id === filters.allocatedTo
+                    );
+                    if (!isAllocated) return false;
+                }
                 return true;
             });
 

@@ -10,12 +10,18 @@ import { DatePicker, DesktopDatePicker, LocalizationProvider } from "@mui/x-date
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { filterLeadReducer } from "../../redux/reducer/lead";
+import { getEmployees } from "../../redux/action/user";
+
 
 const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
 
   //////////////////////////////// VARIABLES ///////////////////////////////////////////////////
   const dispatch = useDispatch()
   const { leads } = useSelector(state => state.lead)
+  const { loggedUser } = useSelector(state => state.user);
+  const { employees } = useSelector(state => state.user);
+
+
   const priorities = [
     { name: "Very Cold", value: 'veryCold' },
     { name: "Cold", value: 'cold' },
@@ -60,7 +66,7 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
     { name: "Student Visa", value: "studentVisa" },
     { name: "Visit Visa", value: "visitVisa" },
   ];
-  const initialFilterState = { city: '', startingDate: '', endingDate: '', status: '', priority: '', country: '', degree: '', visa: '' }
+  const initialFilterState = { city: '', startingDate: '', endingDate: '', status: '', priority: '', country: '', degree: '', visa: '', allocatedTo: '' }
   //////////////////////////////// STATES ///////////////////////////////////////////////////
   const [filters, setFilters] = useState(initialFilterState)
 
@@ -74,6 +80,12 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
     setFilters(initialFilterState)
     setOpen(false)
   }
+
+  useEffect(() => {
+    if (open) {
+      dispatch(getEmployees());
+    }
+  }, [open]);
 
   const handleChange = (field, value) => {
     setFilters((pre) => ({ ...pre, [field]: value }))
@@ -195,6 +207,21 @@ const FilterDrawer = ({ open, setOpen, setIsFiltered }) => {
               <TextField {...params} label="Source" fullWidth />
             )}
           />
+          {loggedUser?.role === "super_admin" && (
+            <Autocomplete
+              size="small"
+              disablePortal
+              options={employees || []}
+              getOptionLabel={(option) => option?.username || ""}
+              onChange={(event, value) =>
+                handleChange("allocatedTo", value?._id || "")
+              }
+              renderInput={(params) => (
+                <TextField {...params} label="Allocated To (Employee)" fullWidth />
+              )}
+            />
+          )}
+
 
           <div className="flex gap-4 justify-end">
             <button className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg font-primary">
