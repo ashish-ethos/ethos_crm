@@ -170,10 +170,15 @@ const ShuffleLead = ({ open, setOpen }) => {
         {/* Content */}
         <Box className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {/* Time Period */}
-          <FormControl fullWidth>
-            <InputLabel>Time Period</InputLabel>
+          <FormControl fullWidth size="small">
+            <InputLabel id="time-period-label" shrink>
+              Time Period
+            </InputLabel>
+
             <Select
+              labelId="time-period-label"
               value={form.period}
+              label="Time Period"
               onChange={(e) =>
                 setForm((p) => ({ ...p, period: e.target.value }))
               }
@@ -186,6 +191,7 @@ const ShuffleLead = ({ open, setOpen }) => {
               ))}
             </Select>
           </FormControl>
+
 
           {/* Custom Range */}
           {form.period === "range" && (
@@ -210,10 +216,16 @@ const ShuffleLead = ({ open, setOpen }) => {
           )}
 
           {/* Filter by Status */}
-          <FormControl fullWidth>
-            <InputLabel>Filter by Status</InputLabel>
+          <FormControl fullWidth size="small">
+            <InputLabel id="status-label" shrink>
+              Filter by Status
+            </InputLabel>
+
             <Select
+              labelId="status-label"
+              label="Filter by Status"
               multiple
+              displayEmpty
               value={form.status}
               onChange={(e) => {
                 const value = e.target.value;
@@ -222,42 +234,57 @@ const ShuffleLead = ({ open, setOpen }) => {
                   status: typeof value === "string" ? value.split(",") : value,
                 }));
               }}
-              input={<OutlinedInput label="Filter by Status" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {selected.map((val) => {
-                    const opt = statusOptions.find((o) => o.value === val);
-                    return (
-                      <Chip
-                        key={val}
-                        size="small"
-                        label={opt?.label || val}
-                      />
-                    );
-                  })}
-                </Box>
-              )}
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return (
+                    <Typography sx={{ color: "text.disabled" }}>
+                      Select Status
+                    </Typography>
+                  );
+                }
+
+                return (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {selected.map((val) => {
+                      const opt = statusOptions.find((o) => o.value === val);
+                      return (
+                        <Chip
+                          key={val}
+                          size="small"
+                          label={opt?.label || val}
+                        />
+                      );
+                    })}
+                  </Box>
+                );
+              }}
             >
               {statusOptions.map((s) => (
                 <MenuItem key={s.value} value={s.value}>
-                  <Checkbox checked={form.status.indexOf(s.value) > -1} />
+                  <Checkbox checked={form.status.includes(s.value)} />
                   <ListItemText primary={s.label} />
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
 
-
           {/* Assign To — UI FIXED */}
-          <FormControl fullWidth>
-            <InputLabel>Assign To</InputLabel>
+          <FormControl fullWidth size="small">
+            <InputLabel id="assign-to-label" shrink>
+              Assign To
+            </InputLabel>
+
             <Select
+              labelId="assign-to-label"
+              label="Assign To"
               multiple
               value={form.employees}
               onChange={(e) =>
-                setForm((p)({ ...p, employees: e.target.value }))
+                setForm((p) => ({
+                  ...p,
+                  employees: e.target.value,
+                }))
               }
-              input={<OutlinedInput label="Assign To" />}
               IconComponent={KeyboardArrowDown}
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -267,23 +294,17 @@ const ShuffleLead = ({ open, setOpen }) => {
                     selected.map((id) => {
                       const emp = employeesList.find((e) => e._id === id);
                       return (
-                        <Chip
-                          key={id}
-                          size="small"
-                          label={emp?.firstName}
-                        />
+                        <Chip key={id} size="small" label={emp?.firstName} />
                       );
                     })
                   )}
                 </Box>
               )}
               MenuProps={{
-                PaperProps: {
-                  style: { maxHeight: 260 },
-                },
+                PaperProps: { style: { maxHeight: 260 } },
               }}
             >
-              <MenuItem sx={{ alignItems: "center" }}>
+              <MenuItem>
                 <Checkbox
                   checked={isAllSelected}
                   indeterminate={
@@ -299,14 +320,8 @@ const ShuffleLead = ({ open, setOpen }) => {
               <Divider />
 
               {employeesList.map((emp) => (
-                <MenuItem
-                  key={emp._id}
-                  value={emp._id}
-                  sx={{ alignItems: "center" }}
-                >
-                  <Checkbox
-                    checked={form.employees.includes(emp._id)}
-                  />
+                <MenuItem key={emp._id} value={emp._id}>
+                  <Checkbox checked={form.employees.includes(emp._id)} />
                   <ListItemText
                     primary={`${emp.firstName} ${emp.lastName}`}
                     secondary={`@${emp.username}`}
