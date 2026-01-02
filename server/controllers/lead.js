@@ -290,7 +290,7 @@ export const filterLead = async (req, res, next) => {
             endDate.setHours(23, 59, 59, 999);
             query = query.where("createdAt").lte(endDate);
         }
-  
+
         const leads = await query
             .populate("property")
             .populate("client")
@@ -606,67 +606,108 @@ const distributeAndAssign = async (leads, employees, options = {}) => {
 export const bulkShuffleLeads = async (req, res, next) => {
     try {
         const {
-            employees,
-            period = 'date',
+            employees,        // Array of employee IDs OR "all"
+            period,           // period filter: "date", "month", "week", "all", etc.
             startingDate,
             endingDate,
-            status,
-            setAsPrimary = true,   // always primary
-            limit
+            status,           // Array of lead statuses to filter
+            limit,            // Max number of leads to shuffle
         } = req.body;
 
-        const filter = { isArchived: { $ne: true } };
+        // ------------------ STEP 1: GET EMPLOYEES ------------------
+        let employeeIds = [];
 
-        // If multiple statuses passed, use them
-        if (status && Array.isArray(status) && status.length > 0) {
-            filter.status = { $in: status };
+        if (employees === "all") {
+            const allEmployees = await User.find({ role: "employee" }, { _id: 1 });
+            employeeIds = allEmployees.map(e => e._id.toString());
+        } else if (Array.isArray(employees) && employees.length > 0) {
+            employeeIds = employees.map(e => e.toString());
         } else {
-            filter.status = { $ne: null };   // ALL leads (no restriction)
+            return next(createError(400, "Invalid or missing employees list"));
         }
 
-        // Date range
-        const { startDate, endDate } = getRangeFromPeriod(period, startingDate, endingDate);
-        if (startDate) filter.createdAt = { ...(filter.createdAt || {}), $gte: startDate };
-        if (endDate) filter.createdAt = { ...(filter.createdAt || {}), $lte: endDate };
+        if (!employeeIds.length) return next(createError(400, "No employees found"));
 
-        // Fetch leads
+        // ------------------ STEP 2: CALCULATE CURRENT LOAD ------------------
+        const loadAgg = await Lead.aggregate([
+            { $match: { isArchived: { $ne: true } } },
+            { $unwind: "$allocatedTo" },
+            { $group: { _id: "$allocatedTo", count: { $sum: 1 } } }
+        ]);
+
+        const employeeLoad = {};
+        employeeIds.forEach(id => (employeeLoad[id] = 0));
+        loadAgg.forEach(item => {
+            const empId = item._id.toString();
+            if (employeeLoad.hasOwnProperty(empId)) employeeLoad[empId] = item.count;
+        });
+
+        // ------------------ STEP 3: FILTER LEADS ------------------
+        const filter = { isArchived: { $ne: true } };
+
+        if (status && Array.isArray(status) && status.length) {
+            filter.status = { $in: status };
+        }
+
+        // Apply date filter only if period is set and not "all"
+        if (period && period !== "all") {
+            const { startDate, endDate } = getRangeFromPeriod(period, startingDate, endingDate);
+            if (startDate) filter.createdAt = { ...(filter.createdAt || {}), $gte: startDate };
+            if (endDate) filter.createdAt = { ...(filter.createdAt || {}), $lte: endDate };
+        }
+
+        console.log("Lead filter:", JSON.stringify(filter, null, 2));
+        console.log("Limit:", limit);
+
         let query = Lead.find(filter);
         if (Number(limit) > 0) query = query.limit(Number(limit));
         let leads = await query.exec();
 
-        // Shuffle leads
+        if (!leads.length) return next(createError(400, "No leads found matching the criteria"));
+
+        // ------------------ STEP 4: SHUFFLE LEADS ------------------
         leads = fisherYatesShuffle(leads);
 
-        // Get employees
-        let employeeIds = [];
-        if (employees === "all") {
-            const all = await User.find({ role: "employee" }, { _id: 1 });
-            employeeIds = all.map(e => e._id.toString());
-        } else {
-            employeeIds = employees.map(e => e.toString());
+        // ------------------ STEP 5: ASSIGN LEADS TO EMPLOYEES ------------------
+        const assignmentLog = {};
+        employeeIds.forEach(id => (assignmentLog[id] = 0));
+
+        let employeeIndex = 0;
+
+        for (const lead of leads) {
+            const prevOwners = (lead.allocatedTo || []).map(e => e.toString());
+            let eligibleEmployees = employeeIds.filter(id => !prevOwners.includes(id));
+
+            if (!eligibleEmployees.length) {
+                // If no eligible employee, assign to one with least load
+                eligibleEmployees.push(
+                    Object.keys(employeeLoad).reduce((a, b) => employeeLoad[a] <= employeeLoad[b] ? a : b)
+                );
+            }
+
+            const selectedEmployee = eligibleEmployees[employeeIndex % eligibleEmployees.length];
+            employeeIndex++;
+
+            const currentlyAllocatedTo = (lead.allocatedTo || []).map(String);
+            if (currentlyAllocatedTo.length !== 1 || currentlyAllocatedTo[0] !== selectedEmployee) {
+                await Lead.findByIdAndUpdate(
+                    lead._id,
+                    { $set: { allocatedTo: [selectedEmployee] } },
+                    { new: true }
+                );
+            }
+
+            employeeLoad[selectedEmployee]++;
+            assignmentLog[selectedEmployee]++;
         }
 
-        if (employeeIds.length === 0)
-            return next(createError(400, "No employees found"));
-
-        // Cycle assign
-        const updated = [];
-        for (let i = 0; i < leads.length; i++) {
-            const empId = employeeIds[i % employeeIds.length];
-            const updatedLead = await Lead.findByIdAndUpdate(
-                leads[i]._id,
-                { $set: { allocatedTo: [empId] } },
-                { new: true }
-            );
-
-            updated.push(updatedLead);
-        }
-
+        // ------------------ STEP 6: RESPONSE ------------------
         res.status(200).json({
             success: true,
-            message: "Shuffled & Reassigned Successfully",
-            totalLeads: leads.length,
-            employees: employeeIds.length,
+            message: "Leads shuffled & distributed fairly",
+            totalLeadsAssigned: leads.length,
+            assignmentSummary: assignmentLog,
+            finalEmployeeLoad: employeeLoad,
         });
 
     } catch (err) {

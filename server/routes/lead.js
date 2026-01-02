@@ -19,13 +19,14 @@ import {
   bulkShuffleLeads,
   filterAndShuffleLeads,
 } from "../controllers/lead.js";
+import { defaultRateLimiter, managerRateLimiter } from "../utils/rateLimit.js";
 import {
   verifyEmployee,
   verifyManager,
   verifySuperAdmin,
   verifyToken,
 } from "../middleware/auth.js";
-import Lead from "../models//lead.js";
+import Lead from "../models/lead.js";
 import { createError } from "../utils/error.js";
 
 const router = express.Router();
@@ -47,48 +48,43 @@ const verifyIsAllocatedTo = async (req, res, next) => {
   }
 };
 
+// Apply default rate limiter for most routes (only for POST, PUT, DELETE, etc.)
+router.use(defaultRateLimiter);
 
-// GET
+// GET Routes
 router.get("/get/single/:leadId", getLead);
 router.get("/get/phone/:phone", getLeadByPhone);
 router.get("/get/employee", verifyToken, verifyEmployee, getEmployeeLeads);
-router.get("/get/all", verifyToken, verifyManager, getLeads);
-router.get("/get/all", verifyToken, getLeads);
+
+// Apply role-based rate limiter to sensitive routes
+router.get("/get/all", verifyToken, (req, res, next) => {
+  if (req.user.role === "manager" || req.user.role === "super_admin") {
+    return managerRateLimiter(req, res, next);
+  }
+  return defaultRateLimiter(req, res, next);
+}, getLeads);
+
+
 router.get("/get/stats", verifyToken, verifyEmployee, getLeadsStat);
 router.get("/search", verifyToken, searchLead);
 router.get("/filter", verifyToken, filterLead);
-
-// GET ALL LEADS
-router.get("/get/all", verifyToken, verifyManager, getLeads);
 router.get("/get/shuffle", verifyToken, verifyManager, getShuffleLeads);
+
+// POST Routes
+router.post("/create", verifyToken, defaultRateLimiter, createLead);
 router.post("/shuffle/assign/:leadId", verifyToken, verifyManager, assignShuffledLead);
 router.post("/shuffle/bulk", verifyToken, verifyManager, bulkShuffleLeads);
 router.post("/shuffle/filter", verifyToken, verifyManager, filterAndShuffleLeads);
 
-
-router.post('/shuffle/bulk', verifyManager, bulkShuffleLeads );
-router.post('/shuffle/filter', verifyManager, filterAndShuffleLeads);
-
-
-
-// POST
-router.post("/create", verifyToken, createLead);
-
-// PUT
+// PUT Routes
 router.put("/archive", verifyToken, verifyEmployee, archiveLead);
-router.put('/archive/:leadId', verifyToken, verifyEmployee, archiveLead);
+router.put("/archive/:leadId", verifyToken, verifyEmployee, archiveLead);
 router.put("/update/:leadId", verifyToken, verifyEmployee, updateLead);
 router.put("/update/shift/:leadId", verifyToken, verifyEmployee, shiftLead);
 router.put("/update/share/:leadId", verifyToken, verifyEmployee, shareLead);
 
-// DELETE
-router.delete(
-  "/delete/:leadId",
-  verifyToken,
-  verifySuperAdmin,
-  verifyManager,
-  deleteLead
-);
+// DELETE Routes
+router.delete("/delete/:leadId", verifyToken, verifySuperAdmin, verifyManager, deleteLead);
 router.delete("/delete-whole-collection", deleteWholeCollection);
 
 export default router;
